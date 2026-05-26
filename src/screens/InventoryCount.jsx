@@ -129,7 +129,7 @@ const ITEMS = [
     incoming: 0, total: 3, display: 3,
     systemEstimate: 4,
     confidence: 'medium',
-    floorLoc: 'Citrus Table, Aisle 10 (Produce)',
+    floorLoc: 'Citrus Table, Aisle 10 (Liquor/Beverage)',
     backLoc: 'PR-CLR-A03-S2',
   },
   {
@@ -151,7 +151,7 @@ const ITEMS = [
     incoming: 0, total: 2, display: 2,
     systemEstimate: 3,
     confidence: 'low',
-    floorLoc: 'Citrus Table, Aisle 10 (Produce)',
+    floorLoc: 'Citrus Table, Aisle 10 (Liquor/Beverage)',
     backLoc: 'PR-LMN-A03-S3',
   },
 ]
@@ -165,10 +165,10 @@ function NudgeCard({ nudge, onDismiss }) {
     tip: 'Physically checking both the floor display and backroom before confirming the estimate takes ~30 seconds and significantly improves system accuracy over time.',
   } : nudge.type === 'decrease' ? {
     headline: `Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.`,
-    tip: `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercount corrections on high-confidence items can trigger overordering.`,
+    tip: `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`,
   } : {
     headline: `Significant count increases on high-confidence Citrus items in this store have been associated with an estimated $180 in lost sales last month.`,
-    tip: "Before adding cases above the estimate, confirm the count includes only stock not yet scanned in today's incoming. Overcounting high-confidence items can delay future reorders.",
+    tip: "Before adding items above the estimate, confirm the count includes only stock not yet scanned in today's incoming. Overcounting high-confidence items can delay future reorders.",
   }
 
   return (

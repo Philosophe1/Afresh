@@ -233,19 +233,19 @@ const STATES = {
   good: {
     performedEnough: true,
     personal: {
-      waste: 247,
-      sales: 183,
-      weeklyTotals: [285, 320, 305, 340, 315, 360, 395, 430],
+      waste: 62,
+      sales: 44,
+      weeklyTotals: [80, 85, 82, 88, 84, 90, 96, 106],
     },
     team: {
-      waste: 1240,
-      sales: 890,
-      weeklyTotals: [1680, 1750, 1820, 1770, 1920, 1860, 2010, 2130],
+      waste: 415,
+      sales: 295,
+      weeklyTotals: [580, 610, 595, 625, 615, 648, 675, 710],
     },
   },
   low: {
     performedEnough: false,
-    team: { waste: 1240, sales: 890 },
+    team: { waste: 415, sales: 295 },
     trend: {
       status: 'below',
       userRates: [67, 63, 60, 57, 55, 54, 52, 49],
