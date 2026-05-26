@@ -216,7 +216,7 @@ export default function TodaysTasks({ countDone, countStats, orderSubmitted, sub
             <div key={i} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               padding: '15px 16px',
-              borderBottom: i < STATS.length - 1 ? '1px solid var(--border)' : 'none',
+              borderBottom: i < stats.length - 1 ? '1px solid var(--border)' : 'none',
             }}>
               <span style={{ fontSize: 14, color: 'var(--text-secondary)', fontWeight: 400 }}>
                 {stat.label}
