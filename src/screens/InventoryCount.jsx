@@ -516,17 +516,22 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           </div>
         </div>
 
-        {/* Incoming / Total / Display */}
+        {/* Incoming / Total / Display (floor only) — Back shows Total only */}
         <div style={{ display: 'flex', borderTop: '1px solid var(--border)', paddingTop: 9, paddingBottom: 9 }}>
-          {[
-            { label: 'Incoming', value: `${item.incoming} ${unit}` },
-            { label: 'Total',    value: `${item.total} ${unit}` },
-            { label: 'Display',  value: `${item.display} ${unit}` },
-          ].map((col, i) => (
+          {(locationView === 'floor'
+            ? [
+                { label: 'Incoming', value: `${item.incoming} ${unit}` },
+                { label: 'Total',    value: `${item.total} ${unit}` },
+                { label: 'Display',  value: `${item.display} ${unit}` },
+              ]
+            : [
+                { label: 'Total', value: `${item.total} ${unit}` },
+              ]
+          ).map((col, i, arr) => (
             <div key={i} style={{
               flex: 1,
-              borderRight: i < 2 ? '1px solid var(--border)' : 'none',
-              paddingRight: i < 2 ? 10 : 0,
+              borderRight: i < arr.length - 1 ? '1px solid var(--border)' : 'none',
+              paddingRight: i < arr.length - 1 ? 10 : 0,
               paddingLeft: i > 0 ? 10 : 0,
             }}>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 2 }}>{col.label}</div>
