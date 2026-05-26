@@ -2,6 +2,7 @@ import { useState } from 'react'
 import TodaysTasks from './screens/TodaysTasks'
 import PreSessionSummary from './screens/PreSessionSummary'
 import OrderReview from './screens/OrderReview'
+import InventoryCount from './screens/InventoryCount'
 
 export default function App() {
   const [screen, setScreen] = useState('tasks')
@@ -37,7 +38,13 @@ export default function App() {
       {screen === 'preSession' && (
         <PreSessionSummary
           onBack={() => setScreen('tasks')}
-          onStartCount={() => { setCountDone(true); setScreen('tasks') }}
+          onStartCount={() => setScreen('inventoryCount')}
+        />
+      )}
+      {screen === 'inventoryCount' && (
+        <InventoryCount
+          onBack={() => setScreen('preSession')}
+          onDone={() => { setCountDone(true); setScreen('tasks') }}
         />
       )}
       {screen === 'orderReview' && (

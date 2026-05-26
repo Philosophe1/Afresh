@@ -1,0 +1,474 @@
+import { useState } from 'react'
+import StatusBar from '../components/StatusBar'
+
+/* ── Icons ── */
+const BackArrowIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="15 18 9 12 15 6" />
+  </svg>
+)
+const HelpIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+    <line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="2.5" />
+  </svg>
+)
+const SearchIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="11" cy="11" r="8" />
+    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+  </svg>
+)
+const CheckIcon = ({ size = 12, color = 'var(--green-primary)' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+    stroke={color} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12" />
+  </svg>
+)
+const ChevronDownIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="6 9 12 15 18 9" />
+  </svg>
+)
+const ChevronUpIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="18 15 12 9 6 15" />
+  </svg>
+)
+const MapPinIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+    <circle cx="12" cy="10" r="3"/>
+  </svg>
+)
+const BoxIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+  </svg>
+)
+const FloorTabIcon = ({ active }) => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke={active ? 'white' : 'var(--text-secondary)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="14" y="14" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/>
+  </svg>
+)
+const BackTabIcon = ({ active }) => (
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+    stroke={active ? 'white' : 'var(--text-secondary)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+    <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+    <line x1="12" y1="22.08" x2="12" y2="12"/>
+  </svg>
+)
+const BarcodeIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+    stroke="var(--green-primary)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9V5a2 2 0 0 1 2-2h4"/><path d="M15 3h4a2 2 0 0 1 2 2v4"/>
+    <path d="M21 15v4a2 2 0 0 1-2 2h-4"/><path d="M9 21H5a2 2 0 0 1-2-2v-4"/>
+    <line x1="7" y1="8" x2="7" y2="16"/><line x1="10" y1="8" x2="10" y2="16"/>
+    <line x1="13" y1="8" x2="13" y2="16"/><line x1="17" y1="8" x2="17" y2="16"/>
+  </svg>
+)
+
+/* ── Data ── */
+const CONFIDENCE = {
+  high:   { label: 'High',   color: 'var(--green-primary)', bg: 'var(--green-light)' },
+  medium: { label: 'Medium', color: 'var(--amber)',         bg: '#FEF3C7' },
+  low:    { label: 'Low',    color: 'var(--red)',           bg: '#FFEBEE' },
+}
+
+const REASONS = ['Damaged / Unsellable', 'New delivery', 'Wrong location', 'Display reduced', 'Other']
+
+const ITEMS = [
+  {
+    id: 'strawberries',
+    name: 'Strawberries (1 lb)',
+    sku: '23984517',
+    incoming: 0, total: 3, display: 3,
+    systemEstimate: 4,
+    confidence: 'medium',
+    floorLoc: 'Produce Table, Aisle 4',
+    backLoc: 'PR-STW-B02-S3',
+  },
+  {
+    id: 'blueberries',
+    name: 'Blueberries (pint)',
+    sku: '23984123',
+    incoming: 1, total: 2, display: 2,
+    systemEstimate: 2,
+    confidence: 'high',
+    floorLoc: 'Berry Shelf, Aisle 4',
+    backLoc: 'PR-BLU-B02-S1',
+  },
+  {
+    id: 'raspberries',
+    name: 'Raspberries (6 oz)',
+    sku: '23984456',
+    incoming: 0, total: 1, display: 1,
+    systemEstimate: 3,
+    confidence: 'low',
+    floorLoc: 'Berry Shelf, Aisle 4',
+    backLoc: 'PR-RSP-B02-S2',
+  },
+]
+
+/* ── Item card ── */
+function ItemCard({ item, state, onSave, onCount, onReason }) {
+  const conf = CONFIDENCE[item.confidence]
+  const diffFromEstimate = state.count !== item.systemEstimate
+
+  return (
+    <div style={{
+      background: 'white', borderRadius: 14, marginBottom: 10,
+      overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
+      border: state.saved ? '1.5px solid var(--green-primary)' : '1.5px solid var(--border)',
+    }}>
+      <div style={{ padding: '12px 14px 0' }}>
+
+        {/* Name + saved badge */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
+          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', flex: 1, marginRight: 8, lineHeight: 1.3 }}>
+            {item.name}
+          </span>
+          {state.saved && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--green-light)', borderRadius: 20, padding: '3px 9px', flexShrink: 0 }}>
+              <CheckIcon size={12} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green-primary)' }}>Saved</span>
+            </div>
+          )}
+        </div>
+
+        {/* SKU */}
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>
+          {item.sku}
+        </div>
+
+        {/* Location detail */}
+        <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
+            <MapPinIcon />
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              Floor: {item.floorLoc}
+            </span>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <BoxIcon />
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              Back: {item.backLoc}
+            </span>
+          </div>
+        </div>
+
+        {/* System estimate + confidence badge */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
+          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>System estimate</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
+            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+              {item.systemEstimate} CS
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: conf.color,
+              background: conf.bg, borderRadius: 20, padding: '2px 8px',
+            }}>
+              {conf.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Incoming / Total / Display */}
+        <div style={{ display: 'flex', borderTop: '1px solid var(--border)', paddingTop: 9, paddingBottom: 9 }}>
+          {[
+            { label: 'Incoming', value: `${item.incoming} CS` },
+            { label: 'Total',    value: `${item.total} CS` },
+            { label: 'Display',  value: `${item.display} CS` },
+          ].map((col, i) => (
+            <div key={i} style={{
+              flex: 1,
+              borderRight: i < 2 ? '1px solid var(--border)' : 'none',
+              paddingRight: i < 2 ? 10 : 0,
+              paddingLeft: i > 0 ? 10 : 0,
+            }}>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 2 }}>{col.label}</div>
+              <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>{col.value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Count controls */}
+      <div style={{ padding: '10px 14px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: diffFromEstimate && !state.saved ? 10 : 0 }}>
+
+          {/* Minus */}
+          <button
+            onClick={() => onCount(Math.max(0, state.count - 1))}
+            style={{
+              width: 40, height: 40, borderRadius: '50%',
+              border: '1.5px solid var(--border)', background: 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
+            }}
+          >−</button>
+
+          {/* Editable count field */}
+          <div style={{ flex: 1, position: 'relative' }}>
+            <input
+              type="number" min="0"
+              value={state.count}
+              onChange={e => {
+                const v = parseInt(e.target.value, 10)
+                onCount(isNaN(v) || v < 0 ? 0 : v)
+              }}
+              style={{
+                width: '100%', padding: '8px 30px 8px 12px',
+                borderRadius: 10,
+                border: `1.5px solid ${state.saved ? 'var(--green-primary)' : 'var(--border)'}`,
+                background: state.saved ? 'var(--green-light)' : 'white',
+                fontSize: 18, fontWeight: 700,
+                color: state.saved ? 'var(--green-primary)' : 'var(--text-primary)',
+                textAlign: 'center', outline: 'none',
+              }}
+            />
+            <span style={{
+              position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)',
+              fontSize: 11, fontWeight: 700,
+              color: state.saved ? 'var(--green-primary)' : 'var(--text-tertiary)',
+              pointerEvents: 'none',
+            }}>CS</span>
+          </div>
+
+          {/* Plus */}
+          <button
+            onClick={() => onCount(state.count + 1)}
+            style={{
+              width: 40, height: 40, borderRadius: '50%',
+              border: '1.5px solid var(--border)', background: 'white',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
+            }}
+          >+</button>
+
+          {/* Save */}
+          <button
+            onClick={onSave}
+            style={{
+              padding: '10px 16px', borderRadius: 10, flexShrink: 0,
+              background: state.saved ? 'var(--green-light)' : 'var(--green-primary)',
+              color: state.saved ? 'var(--green-primary)' : 'white',
+              fontSize: 14, fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 5,
+            }}
+          >
+            {state.saved
+              ? <><CheckIcon size={14} /> Saved</>
+              : 'Save'}
+          </button>
+        </div>
+
+        {/* Structured reason picker — shown when count differs from estimate */}
+        {diffFromEstimate && !state.saved && (
+          <div>
+            <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 7 }}>
+              Differs from estimate ({item.systemEstimate} CS){' '}
+              <span style={{ fontWeight: 400 }}>— reason? (optional)</span>
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
+              {REASONS.map(r => (
+                <button
+                  key={r}
+                  onClick={() => onReason(r === state.reason ? null : r)}
+                  style={{
+                    padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
+                    border: `1.5px solid ${state.reason === r ? 'var(--amber)' : 'var(--border)'}`,
+                    background: state.reason === r ? '#FEF3C7' : 'white',
+                    color: state.reason === r ? 'var(--amber)' : 'var(--text-secondary)',
+                  }}
+                >{r}</button>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+/* ── Main screen ── */
+export default function InventoryCount({ onBack, onDone }) {
+  const [locationView, setLocationView] = useState('floor')
+  const [categoryOpen, setCategoryOpen] = useState(true)
+  const [itemStates, setItemStates] = useState(
+    Object.fromEntries(ITEMS.map(item => [item.id, {
+      count: item.systemEstimate,
+      saved: false,
+      reason: null,
+    }]))
+  )
+
+  const getState    = id => itemStates[id]
+  const updateState = (id, patch) => setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+
+  const savedCount = ITEMS.filter(i => getState(i.id).saved).length
+  const allSaved   = savedCount === ITEMS.length
+  const progress   = savedCount / ITEMS.length
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
+      <StatusBar time="9:41" />
+
+      {/* Nav */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '4px 12px 8px', gap: 5 }}>
+        <button onClick={onBack} style={{ padding: 6, marginLeft: -4, flexShrink: 0 }}>
+          <BackArrowIcon />
+        </button>
+
+        {/* Location view tabs — specific section labels replace generic "Back" / "Floor" */}
+        {['floor', 'back'].map(view => {
+          const isActive = locationView === view
+          return (
+            <button
+              key={view}
+              onClick={() => setLocationView(view)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 4,
+                padding: '5px 9px', borderRadius: 20, flexShrink: 1, minWidth: 0,
+                background: isActive ? 'var(--green-primary)' : 'white',
+                border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
+                color: isActive ? 'white' : 'var(--text-secondary)',
+                fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+              }}
+            >
+              {view === 'floor'
+                ? <FloorTabIcon active={isActive} />
+                : <BackTabIcon active={isActive} />}
+              {view === 'floor' ? 'Floor: Aisle 4' : 'Back: PR-B02'}
+            </button>
+          )
+        })}
+
+        <div style={{ flex: 1 }} />
+        <button style={{ padding: 5 }}><HelpIcon /></button>
+        <button style={{ padding: 5 }}><SearchIcon /></button>
+      </div>
+
+      {/* Full-width progress bar */}
+      <div style={{ height: 4, background: 'var(--border)' }}>
+        <div style={{
+          height: '100%', background: 'var(--green-primary)',
+          width: `${progress * 100}%`,
+          transition: 'width 0.4s ease',
+          borderRadius: '0 2px 2px 0',
+        }} />
+      </div>
+
+      {/* Scrollable body */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', paddingBottom: allSaved ? 90 : 24 }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+            Today's categories
+          </span>
+          <button style={{
+            display: 'flex', alignItems: 'center', gap: 5,
+            padding: '6px 12px', borderRadius: 20,
+            border: '1.5px solid var(--border)', background: 'white',
+            fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)',
+          }}>
+            To Do {ITEMS.length - savedCount}
+            <ChevronDownIcon />
+          </button>
+        </div>
+
+        {/* Category group */}
+        <div>
+          {/* Category row */}
+          <button
+            onClick={() => setCategoryOpen(o => !o)}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, padding: 0, background: 'transparent' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
+                Fresh Berries
+              </span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                {savedCount}/{ITEMS.length} scanned
+              </span>
+            </div>
+            <span style={{ color: 'var(--text-tertiary)', display: 'flex' }}>
+              {categoryOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+            </span>
+          </button>
+
+          {/* Category progress bar */}
+          <div style={{ height: 3, background: 'var(--border)', borderRadius: 4, marginBottom: 10, overflow: 'hidden' }}>
+            <div style={{
+              height: '100%', background: 'var(--green-primary)',
+              width: `${progress * 100}%`, borderRadius: 4,
+              transition: 'width 0.4s ease',
+            }} />
+          </div>
+
+          {/* Item cards */}
+          {categoryOpen && ITEMS.map(item => (
+            <ItemCard
+              key={item.id}
+              item={item}
+              state={getState(item.id)}
+              onSave={() => updateState(item.id, { saved: true })}
+              onCount={count => updateState(item.id, { count, saved: false })}
+              onReason={reason => updateState(item.id, { reason })}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* Complete count bar — appears when all items saved */}
+      {allSaved && (
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0,
+          background: 'white', borderTop: '1px solid var(--border)',
+          padding: '11px 16px 16px',
+          boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
+        }}>
+          <button
+            onClick={onDone}
+            style={{
+              width: '100%', padding: '14px', borderRadius: 12,
+              background: 'var(--green-primary)', color: 'white',
+              fontSize: 15, fontWeight: 700,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            }}
+          >
+            <CheckIcon size={16} color="white" />
+            Complete Count ({ITEMS.length}/{ITEMS.length} items)
+          </button>
+        </div>
+      )}
+
+      {/* Barcode scanner FAB */}
+      {!allSaved && (
+        <div style={{
+          position: 'absolute', bottom: 20, right: 16,
+          width: 52, height: 52, borderRadius: '50%',
+          background: 'white', boxShadow: '0 3px 12px rgba(0,0,0,0.15)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          border: '1.5px solid var(--border)', pointerEvents: 'none',
+        }}>
+          <BarcodeIcon />
+        </div>
+      )}
+    </div>
+  )
+}
