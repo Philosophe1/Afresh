@@ -18,22 +18,13 @@ for (const f of readdirSync(assets).filter(f => f.endsWith('.css'))) {
   )
 }
 
-// Inline JS — wrap in a readyState guard so React only mounts after the DOM
-// is fully parsed. Without this, Safari (and some other browsers) may run a
-// synchronous inline script before getElementById('root') returns the element,
-// causing React error #299 and a blank/black screen.
+// Inline JS — remove from <head>, inject before </body> so #root already
+// exists in the DOM when the script runs synchronously. No wrapper needed:
+// the script tag position guarantees DOM order.
 for (const f of readdirSync(assets).filter(f => f.endsWith('.js'))) {
   const js = readFileSync(join(assets, f), 'utf8')
   html = html.replace(`<script type="module" crossorigin src="./assets/${f}"></script>`, '')
-  // Run as soon as the DOM is ready.  If readyState is already past 'loading'
-  // (e.g. Safari moved past DOMContentLoaded before hitting this inline script)
-  // call immediately; otherwise listen on both DOMContentLoaded and window load
-  // as a belt-and-suspenders fallback.  A 'started' flag prevents double-mount.
-  const guard = `;(function(){var _s=false;function _r(){if(_s)return;_s=true;${js}}` +
-    `if(document.readyState!=='loading'){_r();}` +
-    `else{document.addEventListener('DOMContentLoaded',_r);` +
-    `window.addEventListener('load',_r);}})();`
-  html = html.replace('</body>', () => `<script>${guard}</script>\n</body>`)
+  html = html.replace('</body>', () => `<script>${js}</script>\n</body>`)
 }
 
 const out = join(dist, 'afresh-prototype.html')
