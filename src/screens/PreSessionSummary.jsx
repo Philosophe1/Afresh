@@ -235,12 +235,12 @@ const STATES = {
     personal: {
       waste: 247,
       sales: 183,
-      weeklyTotals: [210, 240, 195, 285, 310, 290, 360, 430],
+      weeklyTotals: [285, 320, 305, 340, 315, 360, 395, 430],
     },
     team: {
       waste: 1240,
       sales: 890,
-      weeklyTotals: [1050, 1180, 980, 1380, 1510, 1420, 1720, 2130],
+      weeklyTotals: [1680, 1750, 1820, 1770, 1920, 1860, 2010, 2130],
     },
   },
   low: {

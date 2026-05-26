@@ -169,12 +169,12 @@ export default function TodaysTasks({ countDone, orderSubmitted, submitTime, onS
               <button
                 onClick={onStartCount}
                 style={{
-                  padding: '8px 18px',
+                  padding: '10px 22px',
                   borderRadius: 22,
                   border: '2px solid var(--green-primary)',
                   background: 'transparent',
                   color: 'var(--green-primary)',
-                  fontSize: 13,
+                  fontSize: 14,
                   fontWeight: 700,
                   letterSpacing: '-0.1px',
                 }}
@@ -236,17 +236,17 @@ export default function TodaysTasks({ countDone, orderSubmitted, submitTime, onS
             <button
               onClick={onViewOrder}
               style={{
-                padding: '8px 18px',
+                padding: '10px 22px',
                 borderRadius: 22,
                 border: '2px solid var(--green-primary)',
                 background: 'transparent',
                 color: 'var(--green-primary)',
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: 700,
                 letterSpacing: '-0.1px',
               }}
             >
-              View order
+              {orderSubmitted ? 'View submitted order' : 'View order'}
             </button>
           </div>
         </div>

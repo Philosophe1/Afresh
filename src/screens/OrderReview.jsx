@@ -108,14 +108,14 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 18.50,
     confidence: 'medium',
-    rationale: 'Based on expected sales of 18 CS in the next 5 days',
+    rationale: 'Based on expected sales of 18 CS in next 5 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 6 CS' },
       { icon: 'trend',    text: 'Recent sales trend: +12% vs last week' },
       { icon: 'calendar', text: 'No upcoming promotion or major event' },
     ],
     risks: [
-      { order: 8,  risk: 'High chance of stockout by day 4' },
+      { order: 8,  risk: 'Stockout likely by day 4' },
       { order: 16, risk: 'Increased waste risk' },
     ],
     needsReview: true,
@@ -132,14 +132,14 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 22.00,
     confidence: 'high',
-    rationale: 'Based on expected sales of 7 CS in the next 4 days',
+    rationale: 'Based on expected sales of 7 CS in next 4 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 1 CS' },
       { icon: 'trend',    text: 'Recent sales trend: steady vs last week' },
       { icon: 'calendar', text: 'No upcoming events' },
     ],
     risks: [
-      { order: 4, risk: 'Moderate stockout risk by day 3' },
+      { order: 4, risk: 'Stockout risk by day 3' },
       { order: 9, risk: 'Slight waste risk' },
     ],
     needsReview: false,
@@ -292,9 +292,9 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
             <SectionLabel>Risk if Ordered Differently</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {item.risks.map((r, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#FFFBEB', borderRadius: 8, padding: '7px 10px' }}>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#FFFBEB', borderRadius: 8, padding: '7px 10px', overflow: 'hidden' }}>
                   <div style={{ flexShrink: 0 }}><AlertIcon /></div>
-                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.35 }}>
+                  <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     <strong>{r.order} CS</strong> → {r.risk}
                   </span>
                 </div>
@@ -305,9 +305,9 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           {/* Action buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <button onClick={onConfirm} style={{
-              width: '100%', padding: '12px', borderRadius: 12,
+              width: '100%', padding: '14px', borderRadius: 12,
               background: 'var(--green-primary)', color: 'white',
-              fontSize: 14, fontWeight: 700, letterSpacing: '-0.2px',
+              fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
             }}>
               <CheckIcon size={15} color="white" />
@@ -315,7 +315,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
             </button>
 
             <button onClick={onToggleOverride} style={{
-              width: '100%', padding: '12px', borderRadius: 12,
+              width: '100%', padding: '13px', borderRadius: 12,
               border: `2px solid ${state.showOverride ? 'var(--amber)' : 'var(--border)'}`,
               background: state.showOverride ? '#FFFBEB' : 'transparent',
               color: state.showOverride ? 'var(--amber)' : 'var(--text-secondary)',
