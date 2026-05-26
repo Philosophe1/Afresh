@@ -310,7 +310,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
 
           {/* Rationale */}
           <div style={{ background: '#F0F9F1', borderRadius: 9, padding: '5px 9px', marginBottom: 8, borderLeft: '3px solid var(--green-primary)' }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-primary)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {item.rationale}
             </div>
           </div>

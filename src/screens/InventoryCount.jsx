@@ -128,7 +128,7 @@ const ITEMS = [
     incoming: 0, total: 3, display: 3,
     systemEstimate: 4,
     confidence: 'medium',
-    floorLoc: 'Citrus Table, Aisle 10',
+    floorLoc: 'Citrus Table, Aisle 10 (Produce)',
     backLoc: 'PR-CLR-A03-S2',
   },
   {
@@ -138,7 +138,7 @@ const ITEMS = [
     incoming: 2, total: 4, display: 4,
     systemEstimate: 6,
     confidence: 'high',
-    floorLoc: 'Citrus Table, Aisle 10',
+    floorLoc: 'Citrus Table',
     backLoc: 'PR-CTR-A03-S1',
   },
   {
@@ -148,7 +148,7 @@ const ITEMS = [
     incoming: 0, total: 2, display: 2,
     systemEstimate: 3,
     confidence: 'low',
-    floorLoc: 'Citrus Table, Aisle 10',
+    floorLoc: 'Citrus Table, Aisle 10 (Produce)',
     backLoc: 'PR-LMN-A03-S3',
   },
 ]
@@ -500,23 +500,20 @@ export default function InventoryCount({ onBack, onDone }) {
           const isActive = locationView === view
           return (
             <button key={view} onClick={() => setLocationView(view)} style={{
-              display: 'flex', alignItems: 'center', gap: 4,
-              padding: '5px 9px', borderRadius: 20, flexShrink: 1, minWidth: 0,
+              display: 'flex', alignItems: 'center', gap: 5,
+              padding: '6px 14px', borderRadius: 20, flexShrink: 0,
               background: isActive ? 'var(--green-primary)' : 'white',
               border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
               color: isActive ? 'white' : 'var(--text-secondary)',
-              fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+              fontSize: 13, fontWeight: 600,
             }}>
               {view === 'floor' ? <FloorTabIcon active={isActive} /> : <BackTabIcon active={isActive} />}
-              {view === 'floor' ? 'Floor: Aisle 10' : 'Back: PR-A03'}
+              {view === 'floor' ? 'Floor' : 'Back'}
             </button>
           )
         })}
 
         <div style={{ flex: 1 }} />
-        <button onClick={() => setFeedbackOpen(true)} style={{ padding: 5 }} aria-label="Add feedback">
-          <ChatIcon />
-        </button>
         <button style={{ padding: 5 }}><HelpIcon /></button>
         <button style={{ padding: 5 }}><SearchIcon /></button>
       </div>
