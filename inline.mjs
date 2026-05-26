@@ -25,11 +25,14 @@ for (const f of readdirSync(assets).filter(f => f.endsWith('.css'))) {
 for (const f of readdirSync(assets).filter(f => f.endsWith('.js'))) {
   const js = readFileSync(join(assets, f), 'utf8')
   html = html.replace(`<script type="module" crossorigin src="./assets/${f}"></script>`, '')
-  // If DOMContentLoaded has already fired (script at end of body), run immediately;
-  // otherwise wait for it. This pattern works in all browsers back to IE9.
-  const guard = `;(function(){function _r(){${js}}` +
-    `if(document.readyState==='loading'){` +
-    `document.addEventListener('DOMContentLoaded',_r);}else{_r();}})();`
+  // Run as soon as the DOM is ready.  If readyState is already past 'loading'
+  // (e.g. Safari moved past DOMContentLoaded before hitting this inline script)
+  // call immediately; otherwise listen on both DOMContentLoaded and window load
+  // as a belt-and-suspenders fallback.  A 'started' flag prevents double-mount.
+  const guard = `;(function(){var _s=false;function _r(){if(_s)return;_s=true;${js}}` +
+    `if(document.readyState!=='loading'){_r();}` +
+    `else{document.addEventListener('DOMContentLoaded',_r);` +
+    `window.addEventListener('load',_r);}})();`
   html = html.replace('</body>', () => `<script>${guard}</script>\n</body>`)
 }
 
