@@ -242,8 +242,8 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           <div style={{
             background: '#F0F9F1',
             borderRadius: 9,
-            padding: '8px 10px',
-            marginBottom: 10,
+            padding: '7px 10px',
+            marginBottom: 9,
             borderLeft: '3px solid var(--green-primary)',
           }}>
             <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.45 }}>
@@ -251,25 +251,34 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
             </div>
           </div>
 
-          {/* Confidence indicator */}
-          {item.confidence === 'medium' && (
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginBottom: 10,
-              background: 'var(--amber-light)',
-              borderRadius: 7,
-              padding: '6px 9px',
-            }}>
-              <SparkleIcon />
-              <span style={{ fontSize: 12, color: 'var(--amber)', fontWeight: 600 }}>
-                Moderate confidence — please verify
-              </span>
-            </div>
-          )}
-
           {/* Key Drivers */}
+          <div style={{ marginBottom: 9 }}>
+            <div style={{
+              fontSize: 10,
+              fontWeight: 700,
+              color: 'var(--text-tertiary)',
+              letterSpacing: '0.8px',
+              textTransform: 'uppercase',
+              marginBottom: 6,
+            }}>
+              Key Drivers
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+              {item.keyDrivers.map((d, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ flexShrink: 0, width: 20, display: 'flex', justifyContent: 'center' }}>
+                    <DriverIcon type={d.icon} />
+                  </div>
+                  <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.35 }}>{d.text}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div style={{ height: 1, background: 'var(--border)', marginBottom: 9 }} />
+
+          {/* Risk section */}
           <div style={{ marginBottom: 10 }}>
             <div style={{
               fontSize: 10,
@@ -277,52 +286,25 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
               color: 'var(--text-tertiary)',
               letterSpacing: '0.8px',
               textTransform: 'uppercase',
-              marginBottom: 7,
-            }}>
-              Key Drivers
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {item.keyDrivers.map((d, i) => (
-                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{ flexShrink: 0, width: 20, display: 'flex', justifyContent: 'center' }}>
-                    <DriverIcon type={d.icon} />
-                  </div>
-                  <span style={{ fontSize: 14, color: 'var(--text-primary)', lineHeight: 1.4 }}>{d.text}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div style={{ height: 1, background: 'var(--border)', marginBottom: 10 }} />
-
-          {/* Risk section */}
-          <div style={{ marginBottom: 12 }}>
-            <div style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: 'var(--text-tertiary)',
-              letterSpacing: '0.8px',
-              textTransform: 'uppercase',
-              marginBottom: 7,
+              marginBottom: 6,
             }}>
               Risk if Ordered Differently
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
               {item.risks.map((r, i) => (
                 <div key={i} style={{
                   display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: 8,
+                  alignItems: 'center',
+                  gap: 7,
                   background: '#FFFBEB',
                   borderRadius: 7,
-                  padding: '7px 9px',
+                  padding: '6px 9px',
                 }}>
-                  <div style={{ flexShrink: 0, marginTop: 1 }}>
+                  <div style={{ flexShrink: 0 }}>
                     <AlertIcon />
                   </div>
-                  <span style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.4 }}>
-                    <strong>Ordering {r.order} cases</strong> → {r.risk}
+                  <span style={{ fontSize: 12, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <strong>{r.order} cases</strong> → {r.risk}
                   </span>
                 </div>
               ))}
