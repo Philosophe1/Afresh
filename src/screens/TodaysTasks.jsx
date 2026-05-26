@@ -26,7 +26,7 @@ const ClipboardIcon = () => (
   </svg>
 )
 
-export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder }) {
+export default function TodaysTasks({ countDone, orderSubmitted, submitTime, onStartCount, onViewOrder }) {
   const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
@@ -122,7 +122,7 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
           Today's tasks
         </h1>
 
-        {/* Task 1 — Inventory count (complete) */}
+        {/* Task 1 — Inventory count */}
         <div style={{
           background: 'var(--card-bg)',
           borderRadius: 14,
@@ -137,15 +137,16 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
             width: 40,
             height: 40,
             borderRadius: 11,
-            background: 'var(--green-light)',
+            background: countDone ? 'var(--green-light)' : '#F3F4F6',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
+            transition: 'background 0.3s ease',
           }}>
-            <CheckIcon size={20} />
+            {countDone ? <CheckIcon size={20} /> : <ClipboardIcon />}
           </div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{
               fontSize: 15,
               fontWeight: 700,
@@ -157,11 +158,30 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
             </div>
             <div style={{
               fontSize: 13,
-              color: 'var(--green-primary)',
               fontWeight: 500,
+              color: countDone ? 'var(--green-primary)' : 'var(--text-secondary)',
+              marginBottom: countDone ? 0 : 10,
+              transition: 'color 0.3s ease',
             }}>
-              All targeted items confirmed
+              {countDone ? 'All targeted items confirmed' : 'Due in 12h · ~15 min'}
             </div>
+            {!countDone && (
+              <button
+                onClick={onStartCount}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: 22,
+                  border: '2px solid var(--green-primary)',
+                  background: 'transparent',
+                  color: 'var(--green-primary)',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  letterSpacing: '-0.1px',
+                }}
+              >
+                Start count
+              </button>
+            )}
           </div>
         </div>
 

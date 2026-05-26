@@ -1,9 +1,11 @@
 import { useState } from 'react'
 import TodaysTasks from './screens/TodaysTasks'
+import PreSessionSummary from './screens/PreSessionSummary'
 import OrderReview from './screens/OrderReview'
 
 export default function App() {
   const [screen, setScreen] = useState('tasks')
+  const [countDone, setCountDone] = useState(false)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
   const [submitTime, setSubmitTime] = useState('')
 
@@ -12,25 +14,30 @@ export default function App() {
     const h = now.getHours()
     const m = now.getMinutes().toString().padStart(2, '0')
     const ampm = h >= 12 ? 'pm' : 'am'
-    const h12 = h % 12 || 12
-    setSubmitTime(`${h12}:${m} ${ampm}`)
+    setSubmitTime(`${h % 12 || 12}:${m} ${ampm}`)
     setOrderSubmitted(true)
     setScreen('tasks')
   }
 
   return (
     <div style={{
-      width: '100%',
-      height: '100%',
+      width: '100%', height: '100%',
       background: 'var(--card-bg)',
-      overflow: 'hidden',
-      position: 'relative',
+      overflow: 'hidden', position: 'relative',
     }}>
       {screen === 'tasks' && (
         <TodaysTasks
+          countDone={countDone}
           orderSubmitted={orderSubmitted}
           submitTime={submitTime}
+          onStartCount={() => setScreen('preSession')}
           onViewOrder={() => setScreen('orderReview')}
+        />
+      )}
+      {screen === 'preSession' && (
+        <PreSessionSummary
+          onBack={() => setScreen('tasks')}
+          onStartCount={() => { setCountDone(true); setScreen('tasks') }}
         />
       )}
       {screen === 'orderReview' && (
