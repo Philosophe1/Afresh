@@ -26,19 +26,19 @@
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: #1A1A1A;
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
 }
 
 #root {
-  /* Zebra TC21/TC26 logical viewport: 720×1280 px at 2× DPR = 360×640 CSS px.
-     TC52/TC52ax: 1080×1920 at ~3× DPR = 360×640 CSS px.
-     Both devices land on the same 360-wide logical viewport. */
-  width: 360px;
-  height: 640px;
-  flex-shrink: 0;
+  /* TC21/TC26 native: 360×640 CSS px (720×1280 physical at DPR 2).
+     Scale down proportionally when the viewport is smaller than that,
+     keeping the 9:16 aspect ratio. Never exceeds native resolution. */
+  width: min(360px, 56.25vh, 100vw);
+  height: min(640px, 100vh, calc(100vw * 16 / 9));
 }
 
 button {
