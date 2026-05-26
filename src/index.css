@@ -55,16 +55,16 @@ input {
   outline: none;
 }
 
-/* Thin scrollbar for scrollable content areas */
+/* Scrollbar for scrollable content areas */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 6px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
   background: #C8D5C9;
-  border-radius: 4px;
+  border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #9DB8A0;

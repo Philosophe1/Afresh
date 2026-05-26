@@ -30,25 +30,25 @@ const CheckIcon = ({ size = 18, color = 'var(--green-primary)' }) => (
   </svg>
 )
 const SparkleIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--amber)">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--amber)">
     <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
   </svg>
 )
 const TrendUpIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
     stroke="var(--green-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
     <polyline points="17 6 23 6 23 12"/>
   </svg>
 )
 const BoxIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
     stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
   </svg>
 )
 const CalendarIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
     stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
     <line x1="16" y1="2" x2="16" y2="6"/>
@@ -57,11 +57,41 @@ const CalendarIcon = () => (
   </svg>
 )
 const AlertIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--amber)">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="var(--amber)">
     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
     <line x1="12" y1="9" x2="12" y2="13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
     <line x1="12" y1="17" x2="12.01" y2="17" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
   </svg>
+)
+
+/* ── unit badge ── */
+const UnitBadge = ({ label, amber }) => (
+  <span style={{
+    background: amber ? 'var(--amber)' : 'var(--green-primary)',
+    color: 'white',
+    borderRadius: 5,
+    padding: '2px 6px',
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: '0.2px',
+    flexShrink: 0,
+  }}>
+    {label}
+  </span>
+)
+
+/* ── section label ── */
+const SectionLabel = ({ children }) => (
+  <div style={{
+    fontSize: 10,
+    fontWeight: 700,
+    color: 'var(--text-tertiary)',
+    letterSpacing: '0.9px',
+    textTransform: 'uppercase',
+    marginBottom: 7,
+  }}>
+    {children}
+  </div>
 )
 
 /* ── order data ── */
@@ -70,203 +100,183 @@ const ITEMS = [
     id: 'strawberries',
     name: 'Strawberries (1 lb clamshells)',
     sku: '23984517',
+    caseInfo: 'Case: $18.50 · 12 units',
+    inventory: '6 CS',
+    price: '$18.50',
+    display: '8 CS',
     recommended: 12,
     unit: 'CS',
     unitCost: 18.50,
+    confidence: 'medium',
     rationale: 'Based on expected sales of 18 cases over the next 5 days',
     keyDrivers: [
-      { icon: 'box', text: 'Current inventory: 6 cases' },
-      { icon: 'trend', text: 'Recent sales trend: +12% vs last week' },
+      { icon: 'box',      text: 'Current inventory: 6 cases' },
+      { icon: 'trend',    text: 'Recent sales trend: +12% vs last week' },
       { icon: 'calendar', text: 'No upcoming promotion or major event' },
     ],
     risks: [
       { order: 8,  risk: 'High chance of stockout by day 4' },
       { order: 16, risk: 'Increased waste risk' },
     ],
-    confidence: 'medium',
     needsReview: true,
   },
   {
     id: 'blueberries',
     name: 'Blueberries (pint)',
     sku: '23984123',
+    caseInfo: 'Case: $22.00 · 8 units',
+    inventory: '1 CS',
+    price: '$22.00',
+    display: '2 CS',
     recommended: 6,
     unit: 'CS',
     unitCost: 22.00,
+    confidence: 'high',
     rationale: 'Based on expected sales of 7 cases over the next 4 days',
     keyDrivers: [
-      { icon: 'box', text: 'Current inventory: 1 case' },
-      { icon: 'trend', text: 'Recent sales trend: steady vs last week' },
+      { icon: 'box',      text: 'Current inventory: 1 case' },
+      { icon: 'trend',    text: 'Recent sales trend: steady vs last week' },
       { icon: 'calendar', text: 'No upcoming events' },
     ],
     risks: [
       { order: 4, risk: 'Moderate stockout risk by day 3' },
       { order: 9, risk: 'Slight waste risk' },
     ],
-    confidence: 'high',
     needsReview: false,
   },
 ]
 
-/* ── driver icon helper ── */
 function DriverIcon({ type }) {
   if (type === 'trend') return <TrendUpIcon />
   if (type === 'calendar') return <CalendarIcon />
   return <BoxIcon />
 }
 
-/* ── single item card ── */
+/* ── divider ── */
+const Divider = ({ my = 10 }) => (
+  <div style={{ height: 1, background: 'var(--border)', margin: `${my}px 0` }} />
+)
+
+/* ── item card ── */
 function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, onSubmitOverride }) {
   const isConfirmed  = state.status === 'confirmed'
   const isOverridden = state.status === 'overridden'
   const isActioned   = isConfirmed || isOverridden
-  const overrideErr  = state.overrideInput !== '' && (
-    isNaN(Number(state.overrideInput)) || Number(state.overrideInput) < 1
-  )
+  const overrideErr  = state.overrideInput !== '' &&
+    (isNaN(Number(state.overrideInput)) || Number(state.overrideInput) < 1)
 
   return (
     <div style={{
       background: 'var(--card-bg)',
-      borderRadius: 13,
+      borderRadius: 14,
       marginBottom: 10,
-      boxShadow: 'var(--shadow-sm)',
       overflow: 'hidden',
-      border: isActioned ? 'none' : (item.needsReview ? '1.5px solid #FECACA' : '1.5px solid var(--border)'),
-      transition: 'border 0.25s ease',
+      boxShadow: 'var(--shadow-sm)',
+      border: isActioned
+        ? '1.5px solid var(--border)'
+        : item.needsReview
+          ? '1.5px solid #FECACA'
+          : '1.5px solid var(--border)',
     }}>
-      {/* Card header */}
+
+      {/* ── Card header ── */}
       <div style={{ padding: '13px 14px 0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
-          <div style={{ flex: 1, marginRight: 8 }}>
-            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
-              {item.name}
-            </div>
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
-              SKU: {item.sku}
-            </div>
+
+        {/* Name row */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px', lineHeight: 1.3, flex: 1, marginRight: 8 }}>
+            {item.name}
           </div>
-          {/* Status badge */}
+          {/* Status badge / indicator */}
           {isConfirmed && (
-            <div style={{
-              background: 'var(--green-light)',
-              borderRadius: 20,
-              padding: '4px 10px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-            }}>
-              <CheckIcon size={13} />
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--green-primary)' }}>Confirmed</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--green-light)', borderRadius: 20, padding: '3px 9px', flexShrink: 0 }}>
+              <CheckIcon size={12} />
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green-primary)' }}>Confirmed</span>
             </div>
           )}
           {isOverridden && (
-            <div style={{
-              background: '#FEF3C7',
-              borderRadius: 20,
-              padding: '4px 10px',
-            }}>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--amber)' }}>Overridden</span>
+            <div style={{ background: '#FEF3C7', borderRadius: 20, padding: '3px 9px', flexShrink: 0 }}>
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--amber)' }}>Overridden</span>
             </div>
           )}
           {!isActioned && item.needsReview && (
-            <div style={{
-              width: 10,
-              height: 10,
-              borderRadius: '50%',
-              background: 'var(--red)',
-              marginTop: 4,
-              flexShrink: 0,
-            }} />
+            <div style={{ width: 9, height: 9, borderRadius: '50%', background: 'var(--red)', marginTop: 4, flexShrink: 0 }} />
           )}
         </div>
 
-        {/* Recommended quantity row */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 10,
-          marginTop: 12,
-          marginBottom: isActioned ? 10 : 14,
-        }}>
-          <div style={{
-            background: isActioned ? 'var(--green-light)' : '#EDF7EE',
-            borderRadius: 8,
-            padding: '6px 14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}>
-            <span style={{ fontSize: 20, fontWeight: 800, color: 'var(--green-primary)', letterSpacing: '-0.5px' }}>
+        {/* SKU + case info */}
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 11 }}>
+          {item.sku} &bull; {item.caseInfo}
+        </div>
+
+        {/* ── Inventory / Price / Display stats ── */}
+        <div style={{ display: 'flex', marginBottom: 11 }}>
+          {[
+            { label: 'Inventory', value: item.inventory },
+            { label: 'Price',     value: item.price },
+            { label: 'Display',   value: item.display },
+          ].map((col, i) => (
+            <div key={i} style={{ flex: 1, borderRight: i < 2 ? '1px solid var(--border)' : 'none', paddingRight: i < 2 ? 10 : 0, paddingLeft: i > 0 ? 10 : 0 }}>
+              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 3, fontWeight: 500 }}>{col.label}</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{col.value}</div>
+            </div>
+          ))}
+        </div>
+
+        <Divider my={0} />
+
+        {/* ── Recommended order + quantity display ── */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '11px 0 10px' }}>
+          <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
+            {isActioned ? (isOverridden ? 'Override quantity' : 'Confirmed quantity') : 'Recommended order'}
+          </span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 20, fontWeight: 800, color: isOverridden ? 'var(--amber)' : 'var(--green-primary)', letterSpacing: '-0.5px' }}>
               {isOverridden ? state.overrideQty : item.recommended}
             </span>
-            <span style={{
-              background: 'var(--green-primary)',
-              color: 'white',
-              borderRadius: 5,
-              padding: '2px 6px',
-              fontSize: 11,
-              fontWeight: 700,
-            }}>
-              {item.unit}
-            </span>
-          </div>
-          <div>
-            {isConfirmed && (
-              <span style={{ fontSize: 13, color: 'var(--green-primary)', fontWeight: 600 }}>
-                Confirmed at {item.recommended} {item.unit}
-              </span>
-            )}
+            <UnitBadge label={item.unit} amber={isOverridden} />
             {isOverridden && (
-              <div>
-                <span style={{ fontSize: 13, color: 'var(--amber)', fontWeight: 600 }}>
-                  Override: {state.overrideQty} {item.unit}
-                </span>
-                <div style={{ fontSize: 12, color: 'var(--text-tertiary)' }}>
-                  Recommended was {item.recommended}
-                </div>
-              </div>
-            )}
-            {!isActioned && (
-              <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>
-                Recommended order
+              <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                (rec: {item.recommended})
               </span>
             )}
           </div>
         </div>
+
+        {/* ── Confidence indicator (medium only, not actioned) ── */}
+        {!isActioned && item.confidence === 'medium' && (
+          <>
+            <Divider my={0} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 0' }}>
+              <SparkleIcon />
+              <span style={{ fontSize: 13, color: 'var(--amber)', fontWeight: 600 }}>
+                Moderate confidence — please verify
+              </span>
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Rationale section — hidden when actioned */}
+      {/* ── Rationale + Drivers + Risk (hidden when actioned) ── */}
       {!isActioned && (
         <div style={{ padding: '0 14px 14px' }}>
-          {/* Rationale summary box */}
-          <div style={{
-            background: '#F0F9F1',
-            borderRadius: 9,
-            padding: '7px 10px',
-            marginBottom: 9,
-            borderLeft: '3px solid var(--green-primary)',
-          }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.45 }}>
+
+          <Divider my={8} />
+
+          {/* Rationale */}
+          <div style={{ background: '#F0F9F1', borderRadius: 9, padding: '8px 11px', marginBottom: 11, borderLeft: '3px solid var(--green-primary)' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
               {item.rationale}
             </div>
           </div>
 
-          {/* Key Drivers */}
-          <div style={{ marginBottom: 9 }}>
-            <div style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: 'var(--text-tertiary)',
-              letterSpacing: '0.8px',
-              textTransform: 'uppercase',
-              marginBottom: 6,
-            }}>
-              Key Drivers
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {/* Key drivers */}
+          <div style={{ marginBottom: 10 }}>
+            <SectionLabel>Key Drivers</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {item.keyDrivers.map((d, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-                  <div style={{ flexShrink: 0, width: 20, display: 'flex', justifyContent: 'center' }}>
+                  <div style={{ flexShrink: 0, width: 18 }}>
                     <DriverIcon type={d.icon} />
                   </div>
                   <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.35 }}>{d.text}</span>
@@ -275,34 +285,15 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
             </div>
           </div>
 
-          {/* Divider */}
-          <div style={{ height: 1, background: 'var(--border)', marginBottom: 9 }} />
+          <Divider my={10} />
 
-          {/* Risk section */}
-          <div style={{ marginBottom: 10 }}>
-            <div style={{
-              fontSize: 10,
-              fontWeight: 700,
-              color: 'var(--text-tertiary)',
-              letterSpacing: '0.8px',
-              textTransform: 'uppercase',
-              marginBottom: 6,
-            }}>
-              Risk if Ordered Differently
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+          {/* Risk */}
+          <div style={{ marginBottom: 12 }}>
+            <SectionLabel>Risk if Ordered Differently</SectionLabel>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {item.risks.map((r, i) => (
-                <div key={i} style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 7,
-                  background: '#FFFBEB',
-                  borderRadius: 7,
-                  padding: '6px 9px',
-                }}>
-                  <div style={{ flexShrink: 0 }}>
-                    <AlertIcon />
-                  </div>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#FFFBEB', borderRadius: 8, padding: '7px 10px' }}>
+                  <div style={{ flexShrink: 0 }}><AlertIcon /></div>
                   <span style={{ fontSize: 12, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     <strong>{r.order} cases</strong> → {r.risk}
                   </span>
@@ -313,94 +304,48 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
 
           {/* Action buttons */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <button
-              onClick={onConfirm}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: 12,
-                background: 'var(--green-primary)',
-                color: 'white',
-                fontSize: 14,
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: 7,
-                letterSpacing: '-0.2px',
-              }}
-            >
+            <button onClick={onConfirm} style={{
+              width: '100%', padding: '12px', borderRadius: 12,
+              background: 'var(--green-primary)', color: 'white',
+              fontSize: 14, fontWeight: 700, letterSpacing: '-0.2px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7,
+            }}>
               <CheckIcon size={15} color="white" />
               Confirm Recommended Order
             </button>
 
-            <button
-              onClick={onToggleOverride}
-              style={{
-                width: '100%',
-                padding: '12px',
-                borderRadius: 12,
-                border: `2px solid ${state.showOverride ? 'var(--amber)' : 'var(--border)'}`,
-                background: state.showOverride ? 'var(--amber-light)' : 'transparent',
-                color: state.showOverride ? 'var(--amber)' : 'var(--text-secondary)',
-                fontSize: 14,
-                fontWeight: 700,
-                letterSpacing: '-0.2px',
-                transition: 'all 0.2s ease',
-              }}
-            >
+            <button onClick={onToggleOverride} style={{
+              width: '100%', padding: '12px', borderRadius: 12,
+              border: `2px solid ${state.showOverride ? 'var(--amber)' : 'var(--border)'}`,
+              background: state.showOverride ? '#FFFBEB' : 'transparent',
+              color: state.showOverride ? 'var(--amber)' : 'var(--text-secondary)',
+              fontSize: 14, fontWeight: 700, letterSpacing: '-0.2px',
+              transition: 'all 0.2s ease',
+            }}>
               Override Recommended Order
             </button>
 
-            {/* Override input — appears inline */}
+            {/* Override input */}
             {state.showOverride && (
-              <div style={{
-                background: '#FFFBEB',
-                borderRadius: 11,
-                padding: '11px',
-                border: '1.5px solid #FDE68A',
-              }}>
-                <div style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: 'var(--text-secondary)',
-                  marginBottom: 8,
-                }}>
+              <div style={{ background: '#FFFBEB', borderRadius: 11, padding: '12px', border: '1.5px solid #FDE68A' }}>
+                <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 8 }}>
                   Enter new quantity (cases)
                 </div>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <div style={{ position: 'relative', flex: 1 }}>
                     <input
-                      type="number"
-                      min="1"
-                      placeholder="e.g. 8"
+                      type="number" min="1" placeholder="e.g. 8"
                       value={state.overrideInput}
                       onChange={e => onOverrideInput(e.target.value)}
                       style={{
-                        width: '100%',
-                        padding: '10px 12px',
-                        borderRadius: 9,
-                        border: `1.5px solid ${overrideErr ? 'var(--red)' : '#FDE68A'}`,
-                        background: 'white',
-                        fontSize: 16,
-                        fontWeight: 700,
-                        color: 'var(--text-primary)',
+                        width: '100%', padding: '10px 44px 10px 12px',
+                        borderRadius: 9, border: `1.5px solid ${overrideErr ? 'var(--red)' : '#FDE68A'}`,
+                        background: 'white', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)',
                       }}
                     />
                     {state.overrideInput && !overrideErr && (
-                      <span style={{
-                        position: 'absolute',
-                        right: 10,
-                        top: '50%',
-                        transform: 'translateY(-50%)',
-                        background: 'var(--amber)',
-                        color: 'white',
-                        borderRadius: 4,
-                        padding: '2px 6px',
-                        fontSize: 10,
-                        fontWeight: 700,
-                      }}>
-                        {item.unit}
+                      <span style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)' }}>
+                        <UnitBadge label={item.unit} amber />
                       </span>
                     )}
                   </div>
@@ -408,17 +353,10 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                     onClick={onSubmitOverride}
                     disabled={!state.overrideInput || overrideErr}
                     style={{
-                      padding: '10px 14px',
-                      borderRadius: 9,
-                      background: (!state.overrideInput || overrideErr)
-                        ? '#E5E7EB'
-                        : 'var(--amber)',
+                      padding: '10px 14px', borderRadius: 9,
+                      background: (!state.overrideInput || overrideErr) ? '#E5E7EB' : 'var(--amber)',
                       color: (!state.overrideInput || overrideErr) ? 'var(--text-tertiary)' : 'white',
-                      fontSize: 13,
-                      fontWeight: 700,
-                      transition: 'all 0.2s ease',
-                      letterSpacing: '-0.1px',
-                      flexShrink: 0,
+                      fontSize: 13, fontWeight: 700, flexShrink: 0, transition: 'all 0.2s ease',
                     }}
                   >
                     Submit Override
@@ -435,23 +373,13 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
         </div>
       )}
 
-      {/* Actioned — collapsed footer */}
+      {/* ── Actioned collapsed footer ── */}
       {isActioned && (
-        <div style={{
-          padding: '0 16px 14px',
-          display: 'flex',
-          justifyContent: 'flex-end',
-        }}>
-          <button
-            onClick={onToggleOverride}
-            style={{
-              fontSize: 13,
-              color: 'var(--text-secondary)',
-              fontWeight: 600,
-              textDecoration: 'underline',
-              textUnderlineOffset: 2,
-            }}
-          >
+        <div style={{ padding: '0 14px 12px', display: 'flex', justifyContent: 'flex-end' }}>
+          <button onClick={onToggleOverride} style={{
+            fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600,
+            textDecoration: 'underline', textUnderlineOffset: 2,
+          }}>
             Change
           </button>
         </div>
@@ -464,20 +392,14 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
 export default function OrderReview({ onBack, onSubmit }) {
   const [itemStates, setItemStates] = useState(
     Object.fromEntries(ITEMS.map(item => [item.id, {
-      status: 'pending',
-      overrideInput: '',
-      overrideQty: null,
-      showOverride: false,
+      status: 'pending', overrideInput: '', overrideQty: null, showOverride: false,
     }]))
   )
 
-  const getState = id => itemStates[id]
+  const getState    = id => itemStates[id]
+  const updateState = (id, patch) => setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
 
-  const updateState = (id, patch) =>
-    setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
-
-  const handleConfirm = id => updateState(id, { status: 'confirmed', showOverride: false })
-
+  const handleConfirm       = id => updateState(id, { status: 'confirmed', showOverride: false })
   const handleToggleOverride = id => {
     const cur = getState(id)
     if (cur.status === 'confirmed' || cur.status === 'overridden') {
@@ -486,63 +408,40 @@ export default function OrderReview({ onBack, onSubmit }) {
       updateState(id, { showOverride: !cur.showOverride })
     }
   }
-
-  const handleOverrideInput = (id, val) => updateState(id, { overrideInput: val })
-
+  const handleOverrideInput  = (id, val) => updateState(id, { overrideInput: val })
   const handleSubmitOverride = id => {
-    const cur = getState(id)
-    const qty = parseInt(cur.overrideInput, 10)
+    const qty = parseInt(getState(id).overrideInput, 10)
     if (!qty || qty < 1) return
     updateState(id, { status: 'overridden', overrideQty: qty, showOverride: false, overrideInput: '' })
   }
 
-  const allActioned = ITEMS.every(i => {
-    const s = getState(i.id)
-    return s.status === 'confirmed' || s.status === 'overridden'
-  })
-
+  const allActioned    = ITEMS.every(i => ['confirmed','overridden'].includes(getState(i.id).status))
   const reviewNeeded   = ITEMS.filter(i => i.needsReview && getState(i.id).status === 'pending')
-  // "All items" = items not currently sitting in the "to review" queue
   const allItemsToShow = ITEMS.filter(i => !i.needsReview || getState(i.id).status !== 'pending')
 
-  const totalCS   = ITEMS.reduce((sum, i) => {
-    const s = getState(i.id)
-    return sum + (s.status === 'overridden' ? s.overrideQty : i.recommended)
-  }, 0)
-  const totalCost = ITEMS.reduce((sum, i) => {
-    const s = getState(i.id)
-    const qty = s.status === 'overridden' ? s.overrideQty : i.recommended
-    return sum + qty * i.unitCost
+  const totalCS   = ITEMS.reduce((s, i) => s + (getState(i.id).status === 'overridden' ? getState(i.id).overrideQty : i.recommended), 0)
+  const totalCost = ITEMS.reduce((s, i) => {
+    const qty = getState(i.id).status === 'overridden' ? getState(i.id).overrideQty : i.recommended
+    return s + qty * i.unitCost
   }, 0)
 
+  const cardProps = id => ({
+    item: ITEMS.find(i => i.id === id),
+    state: getState(id),
+    onConfirm: () => handleConfirm(id),
+    onToggleOverride: () => handleToggleOverride(id),
+    onOverrideInput: val => handleOverrideInput(id, val),
+    onSubmitOverride: () => handleSubmitOverride(id),
+  })
+
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      background: 'var(--page-bg)',
-      position: 'relative',
-    }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
       <StatusBar time="9:30" />
 
       {/* Nav header */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        padding: '4px 12px 8px',
-        gap: 4,
-      }}>
-        <button onClick={onBack} style={{ padding: 6, marginLeft: -4 }}>
-          <BackIcon />
-        </button>
-        <span style={{
-          flex: 1,
-          textAlign: 'center',
-          fontSize: 16,
-          fontWeight: 700,
-          color: 'var(--text-primary)',
-          letterSpacing: '-0.3px',
-        }}>
+      <div style={{ display: 'flex', alignItems: 'center', padding: '4px 12px 10px', gap: 4 }}>
+        <button onClick={onBack} style={{ padding: 6, marginLeft: -4 }}><BackIcon /></button>
+        <span style={{ flex: 1, textAlign: 'center', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
           Order review
         </span>
         <button style={{ padding: 6 }}><HelpIcon /></button>
@@ -550,115 +449,66 @@ export default function OrderReview({ onBack, onSubmit }) {
       </div>
 
       {/* Scrollable body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 14px 90px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '2px 14px 90px' }}>
 
-        {/* Items to Review section */}
+        {/* Items to review */}
         {reviewNeeded.length > 0 && (
-          <div style={{ marginBottom: 6 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 12 }}>
-              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--red)' }}>
-                Items to review
-              </span>
+          <div style={{ marginBottom: 4 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 11 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--red)' }}>Items to review</span>
               <div style={{
-                background: 'var(--red)',
-                color: 'white',
-                borderRadius: 12,
-                minWidth: 22,
-                height: 22,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 800,
-                padding: '0 6px',
+                background: 'var(--red)', color: 'white', borderRadius: 12,
+                minWidth: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 12, fontWeight: 800, padding: '0 6px',
               }}>
                 {reviewNeeded.length}
               </div>
             </div>
-
             {ITEMS.filter(i => i.needsReview).map(item => (
-              <ItemCard
-                key={item.id}
-                item={item}
-                state={getState(item.id)}
-                onConfirm={() => handleConfirm(item.id)}
-                onToggleOverride={() => handleToggleOverride(item.id)}
-                onOverrideInput={val => handleOverrideInput(item.id, val)}
-                onSubmitOverride={() => handleSubmitOverride(item.id)}
-              />
+              <ItemCard key={item.id} {...cardProps(item.id)} />
             ))}
           </div>
         )}
 
-        {/* All items section */}
+        {/* All items */}
         <div>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 10,
-            marginTop: reviewNeeded.length === 0 ? 0 : 8,
-          }}>
-            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-              All items
-            </span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10, marginTop: reviewNeeded.length > 0 ? 6 : 0 }}>
+            <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>All items</span>
             <button style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 5,
-              padding: '6px 14px',
-              borderRadius: 20,
-              border: '1.5px solid var(--border)',
-              background: 'white',
-              fontSize: 13,
-              fontWeight: 600,
-              color: 'var(--text-secondary)',
+              display: 'flex', alignItems: 'center', gap: 5, padding: '6px 13px',
+              borderRadius: 20, border: '1.5px solid var(--border)', background: 'white',
+              fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)',
             }}>
               Filter
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="6 9 12 15 18 9" />
               </svg>
             </button>
           </div>
-
           {allItemsToShow.map(item => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              state={getState(item.id)}
-              onConfirm={() => handleConfirm(item.id)}
-              onToggleOverride={() => handleToggleOverride(item.id)}
-              onOverrideInput={val => handleOverrideInput(item.id, val)}
-              onSubmitOverride={() => handleSubmitOverride(item.id)}
-            />
+            <ItemCard key={item.id} {...cardProps(item.id)} />
           ))}
         </div>
       </div>
 
-      {/* Bottom sticky bar */}
+      {/* Bottom bar */}
       <div style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        background: 'white',
-        borderTop: '1px solid var(--border)',
-        padding: '10px 14px 14px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 12,
+        position: 'absolute', bottom: 0, left: 0, right: 0,
+        background: 'white', borderTop: '1px solid var(--border)',
+        padding: '11px 14px 16px',
+        display: 'flex', alignItems: 'center', gap: 12,
         boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
       }}>
         <div style={{ flexShrink: 0 }}>
           <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total</div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             {totalCS} CS
           </div>
         </div>
         <div style={{ flexShrink: 0 }}>
           <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total cost</div>
-          <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             ${totalCost.toFixed(2)}
           </div>
         </div>
@@ -666,14 +516,9 @@ export default function OrderReview({ onBack, onSubmit }) {
           onClick={allActioned ? onSubmit : undefined}
           disabled={!allActioned}
           style={{
-            flex: 1,
-            padding: '13px',
-            borderRadius: 28,
+            flex: 1, padding: '13px', borderRadius: 28,
             background: allActioned ? 'var(--green-primary)' : '#C8D9C9',
-            color: 'white',
-            fontSize: 15,
-            fontWeight: 700,
-            letterSpacing: '-0.2px',
+            color: 'white', fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
             transition: 'background 0.25s ease',
             cursor: allActioned ? 'pointer' : 'not-allowed',
           }}
