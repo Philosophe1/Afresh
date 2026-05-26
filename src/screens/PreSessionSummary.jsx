@@ -48,7 +48,49 @@ const InfoIcon = () => (
   </svg>
 )
 
-/* ── sparkline ── */
+/* ── bar chart ── */
+function BarChart({ weeklyData, barColor }) {
+  const W = 284, H = 54
+  const n = weeklyData.length
+  const gap = 5
+  const barW = (W - (n - 1) * gap) / n
+  const maxVal = Math.max(...weeklyData)
+
+  return (
+    <div>
+      <div style={{
+        fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)',
+        letterSpacing: '0.7px', textTransform: 'uppercase', marginBottom: 7,
+      }}>
+        Weekly total $ impact
+      </div>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
+        style={{ display: 'block' }}>
+        {weeklyData.map((v, i) => {
+          const isLast = i === n - 1
+          const barH = Math.max(4, (v / maxVal) * H)
+          const x = i * (barW + gap)
+          const y = H - barH
+          return (
+            <rect key={i}
+              x={x.toFixed(1)} y={y.toFixed(1)}
+              width={barW.toFixed(1)} height={barH.toFixed(1)}
+              rx="3" ry="3"
+              fill={barColor}
+              fillOpacity={isLast ? 1 : 0.28}
+            />
+          )
+        })}
+      </svg>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+        <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>8 wks ago</span>
+        <span style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 600 }}>This week</span>
+      </div>
+    </div>
+  )
+}
+
+/* ── sparkline (used for low state trend card) ── */
 function Sparkline({ userRates, avgRates, color = 'var(--green-primary)' }) {
   const W = 290, H = 52, PX = 6, PY = 6
   const all = [...userRates, ...avgRates]
@@ -58,10 +100,8 @@ function Sparkline({ userRates, avgRates, color = 'var(--green-primary)' }) {
 
   const cx = i => PX + (i / (n - 1)) * (W - PX * 2)
   const cy = v => H - PY - ((v - lo) / (hi - lo)) * (H - PY * 2)
-
   const line = arr => arr.map((v, i) => `${i === 0 ? 'M' : 'L'}${cx(i).toFixed(1)},${cy(v).toFixed(1)}`).join(' ')
 
-  // shaded area under user line
   const area = [
     `M${cx(0).toFixed(1)},${cy(userRates[0]).toFixed(1)}`,
     ...userRates.slice(1).map((v, i) => `L${cx(i + 1).toFixed(1)},${cy(v).toFixed(1)}`),
@@ -77,7 +117,6 @@ function Sparkline({ userRates, avgRates, color = 'var(--green-primary)' }) {
     <div>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet"
         style={{ display: 'block', overflow: 'visible' }}>
-        {/* Shaded area */}
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity="0.12" />
@@ -85,22 +124,17 @@ function Sparkline({ userRates, avgRates, color = 'var(--green-primary)' }) {
           </linearGradient>
         </defs>
         <path d={area} fill="url(#areaGrad)" />
-        {/* Store average — dashed gray */}
         <path d={line(avgRates)} fill="none" stroke="#CBD5E1" strokeWidth="1.5"
           strokeDasharray="4 3" strokeLinecap="round" />
-        {/* User line */}
         <path d={line(userRates)} fill="none" stroke={color} strokeWidth="2.2"
           strokeLinecap="round" strokeLinejoin="round" />
-        {/* End dot */}
         <circle cx={lastX} cy={lastY} r="3.5" fill={color} />
         <circle cx={lastX} cy={lastY} r="6" fill={color} fillOpacity="0.18" />
       </svg>
-      {/* X-axis labels */}
       <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 3 }}>
         <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>8 wks ago</span>
         <span style={{ fontSize: 10, color: 'var(--text-tertiary)' }}>Now</span>
       </div>
-      {/* Legend */}
       <div style={{ display: 'flex', gap: 14, marginTop: 6 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
           <svg width="18" height="6"><line x1="0" y1="3" x2="18" y2="3"
@@ -124,6 +158,38 @@ function ImpactRow({ label, value, color = 'var(--text-primary)' }) {
       <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{label}</span>
       <span style={{ fontSize: 15, fontWeight: 800, color, letterSpacing: '-0.3px' }}>{value}</span>
     </div>
+  )
+}
+
+/* ── impact block: stats + optional bar chart ── */
+function ImpactBlock({ waste, sales, textColor, lightBg, showChart, weeklyTotals, barColor }) {
+  const total = waste + sales
+  return (
+    <>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <ImpactRow label="Waste reduced"  value={`~$${waste.toLocaleString()}`} color={textColor} />
+        <div style={{ height: 1, background: 'var(--border)' }} />
+        <ImpactRow label="Sales gained"   value={`~$${sales.toLocaleString()}`} color={textColor} />
+        <div style={{ height: 1, background: 'var(--border)' }} />
+        {/* Total $ impact */}
+        <div style={{
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          background: lightBg, borderRadius: 9, padding: '7px 10px',
+        }}>
+          <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}>
+            Total $ impact
+          </span>
+          <span style={{ fontSize: 17, fontWeight: 800, color: textColor, letterSpacing: '-0.4px' }}>
+            ~${total.toLocaleString()}
+          </span>
+        </div>
+      </div>
+      {showChart && weeklyTotals && (
+        <div style={{ marginTop: 14 }}>
+          <BarChart weeklyData={weeklyTotals} barColor={barColor} />
+        </div>
+      )}
+    </>
   )
 }
 
@@ -155,28 +221,31 @@ function SectionCard({ icon, title, accent, children }) {
   )
 }
 
-/* ── trend status pill ── */
+/* ── trend status pill styles ── */
 const TREND_STYLES = {
   above:   { bg: '#ECFDF5', color: '#065F46', label: 'above' },
   in_line: { bg: '#EFF6FF', color: '#1E40AF', label: 'in line with' },
   below:   { bg: '#FEF3C7', color: '#92400E', label: 'below' },
 }
 
-/* ── data for the two demo states ── */
+/* ── demo state data ── */
 const STATES = {
   good: {
     performedEnough: true,
-    personal: { waste: 247, availability: 183 },
-    team:     { waste: 1240, availability: 890 },
-    trend: {
-      status: 'above',
-      userRates: [68, 71, 74, 72, 75, 78, 76, 82],
-      avgRates:  [68, 68, 69, 70, 70, 71, 71, 72],
+    personal: {
+      waste: 247,
+      sales: 183,
+      weeklyTotals: [210, 240, 195, 285, 310, 290, 360, 430],
+    },
+    team: {
+      waste: 1240,
+      sales: 890,
+      weeklyTotals: [1050, 1180, 980, 1380, 1510, 1420, 1720, 2130],
     },
   },
   low: {
     performedEnough: false,
-    team: { waste: 1240, availability: 890 },
+    team: { waste: 1240, sales: 890 },
     trend: {
       status: 'below',
       userRates: [67, 63, 60, 57, 55, 54, 52, 49],
@@ -190,7 +259,7 @@ export default function PreSessionSummary({ onBack, onStartCount }) {
   const [demoState, setDemoState] = useState('good')
   const data   = STATES[demoState]
   const trend  = data.trend
-  const tStyle = TREND_STYLES[trend.status]
+  const tStyle = trend ? TREND_STYLES[trend.status] : null
   const tColor = demoState === 'good' ? 'var(--green-primary)' : 'var(--amber)'
 
   return (
@@ -213,7 +282,7 @@ export default function PreSessionSummary({ onBack, onStartCount }) {
         <div style={{ width: 34 }} />
       </div>
 
-      {/* Demo toggle — prototype only */}
+      {/* Demo toggle */}
       <div style={{
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         gap: 6, padding: '0 14px 8px',
@@ -237,7 +306,6 @@ export default function PreSessionSummary({ onBack, onStartCount }) {
       {/* Scrollable content */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '0 14px 90px' }}>
 
-        {/* Week label */}
         <div style={{
           fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 500,
           marginBottom: 12, textAlign: 'center',
@@ -245,42 +313,49 @@ export default function PreSessionSummary({ onBack, onStartCount }) {
           Summary for week of May 19–25
         </div>
 
-        {/* ── PERSONAL IMPACT (good performers only) ── */}
+        {/* Personal impact (high performer only) */}
         {data.performedEnough && (
           <SectionCard
             icon={<LeafIcon />}
             title="Your impact last week"
             accent="var(--green-primary)"
           >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <ImpactRow label="Waste reduced" value={`~$${data.personal.waste}`} color="var(--green-primary)" />
-              <div style={{ height: 1, background: 'var(--border)' }} />
-              <ImpactRow label="Availability improved" value={`~$${data.personal.availability}`} color="var(--green-primary)" />
-            </div>
+            <ImpactBlock
+              waste={data.personal.waste}
+              sales={data.personal.sales}
+              textColor="var(--green-primary)"
+              lightBg="var(--green-light)"
+              showChart={true}
+              weeklyTotals={data.personal.weeklyTotals}
+              barColor="var(--green-primary)"
+            />
           </SectionCard>
         )}
 
-        {/* ── TEAM IMPACT (always shown) ── */}
+        {/* Team impact */}
         <SectionCard
           icon={<TeamIcon />}
           title="Your team's impact last week"
           accent="#6366F1"
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <ImpactRow label="Waste reduced" value={`~$${data.team.waste.toLocaleString()}`} color="#4F46E5" />
-            <div style={{ height: 1, background: 'var(--border)' }} />
-            <ImpactRow label="Availability improved" value={`~$${data.team.availability.toLocaleString()}`} color="#4F46E5" />
-          </div>
+          <ImpactBlock
+            waste={data.team.waste}
+            sales={data.team.sales}
+            textColor="#4F46E5"
+            lightBg="#EEF2FF"
+            showChart={data.performedEnough}
+            weeklyTotals={data.team.weeklyTotals}
+            barColor="#6366F1"
+          />
         </SectionCard>
 
-        {/* ── TREND CARD ── */}
-        <SectionCard
-          icon={<TrendIcon />}
-          title="Your adjustment trend (8 weeks)"
-          accent={tColor}
-        >
-          {/* Status sentence */}
-          {!data.performedEnough && (
+        {/* Trend card (low state only) */}
+        {!data.performedEnough && trend && (
+          <SectionCard
+            icon={<TrendIcon />}
+            title="Your adjustment trend (8 weeks)"
+            accent={tColor}
+          >
             <div style={{
               fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.45,
               marginBottom: 12,
@@ -294,30 +369,26 @@ export default function PreSessionSummary({ onBack, onStartCount }) {
               </span>
               {' '}the store average.
             </div>
-          )}
 
-          {/* Sparkline */}
-          <Sparkline userRates={trend.userRates} avgRates={trend.avgRates} color={tColor} />
+            <Sparkline userRates={trend.userRates} avgRates={trend.avgRates} color={tColor} />
 
-          {/* Percentage callout */}
-          <div style={{
-            display: 'flex', justifyContent: 'flex-end', marginTop: 8,
-          }}>
-            <div style={{
-              background: `${tStyle.bg}`, borderRadius: 8,
-              padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 6,
-            }}>
-              <span style={{ fontSize: 11, color: tStyle.color, fontWeight: 600 }}>
-                Current: {trend.userRates[trend.userRates.length - 1]}%
-              </span>
-              <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
-                vs avg {trend.avgRates[trend.avgRates.length - 1]}%
-              </span>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+              <div style={{
+                background: tStyle.bg, borderRadius: 8,
+                padding: '5px 10px', display: 'flex', alignItems: 'center', gap: 6,
+              }}>
+                <span style={{ fontSize: 11, color: tStyle.color, fontWeight: 600 }}>
+                  Current: {trend.userRates[trend.userRates.length - 1]}%
+                </span>
+                <span style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>
+                  vs avg {trend.avgRates[trend.avgRates.length - 1]}%
+                </span>
+              </div>
             </div>
-          </div>
-        </SectionCard>
+          </SectionCard>
+        )}
 
-        {/* ── DISCLAIMER ── */}
+        {/* Disclaimer */}
         <div style={{
           display: 'flex', alignItems: 'flex-start', gap: 7,
           background: 'var(--card-bg)', borderRadius: 10,
