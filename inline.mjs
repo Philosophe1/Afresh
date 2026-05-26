@@ -23,7 +23,7 @@ for (const f of readdirSync(assets).filter(f => f.endsWith('.js'))) {
   const js = readFileSync(join(assets, f), 'utf8')
   html = html.replace(
     `<script type="module" crossorigin src="./assets/${f}"></script>`,
-    () => `<script type="module">${js}</script>`
+    () => `<script>${js}</script>`
   )
 }
 
