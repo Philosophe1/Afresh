@@ -101,34 +101,34 @@ const SIGNIFICANT_DIFF = 2  // cases away from estimate before prompting
 
 const ITEMS = [
   {
-    id: 'strawberries',
-    name: 'Strawberries (1 lb)',
-    sku: '23984517',
+    id: 'limes',
+    name: 'Limes (each)',
+    sku: '23985001',
     incoming: 0, total: 3, display: 3,
     systemEstimate: 4,
     confidence: 'medium',
-    floorLoc: 'Produce Table, Aisle 4',
-    backLoc: 'PR-STW-B02-S3',
+    floorLoc: 'Citrus Table, Aisle 10',
+    backLoc: 'PR-CLR-A03-S2',
   },
   {
-    id: 'blueberries',
-    name: 'Blueberries (pint)',
-    sku: '23984123',
-    incoming: 1, total: 2, display: 2,
-    systemEstimate: 2,
+    id: 'oranges',
+    name: 'Navel Oranges (each)',
+    sku: '23985012',
+    incoming: 2, total: 4, display: 4,
+    systemEstimate: 6,
     confidence: 'high',
-    floorLoc: 'Berry Shelf, Aisle 4',
-    backLoc: 'PR-BLU-B02-S1',
+    floorLoc: 'Citrus Table, Aisle 10',
+    backLoc: 'PR-CTR-A03-S1',
   },
   {
-    id: 'raspberries',
-    name: 'Raspberries (6 oz)',
-    sku: '23984456',
-    incoming: 0, total: 1, display: 1,
+    id: 'lemons',
+    name: 'Lemons (each)',
+    sku: '23985089',
+    incoming: 0, total: 2, display: 2,
     systemEstimate: 3,
     confidence: 'low',
-    floorLoc: 'Berry Shelf, Aisle 4',
-    backLoc: 'PR-RSP-B02-S2',
+    floorLoc: 'Citrus Table, Aisle 10',
+    backLoc: 'PR-LMN-A03-S3',
   },
 ]
 
@@ -362,7 +362,7 @@ export default function InventoryCount({ onBack, onDone }) {
               {view === 'floor'
                 ? <FloorTabIcon active={isActive} />
                 : <BackTabIcon active={isActive} />}
-              {view === 'floor' ? 'Floor: Aisle 4' : 'Back: PR-B02'}
+              {view === 'floor' ? 'Floor: Aisle 10' : 'Back: PR-A03'}
             </button>
           )
         })}
@@ -410,7 +410,7 @@ export default function InventoryCount({ onBack, onDone }) {
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Fresh Berries
+                Citrus Fruits
               </span>
               <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                 {savedCount}/{ITEMS.length} scanned
