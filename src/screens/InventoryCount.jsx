@@ -80,6 +80,27 @@ const BarcodeIcon = () => (
     <line x1="13" y1="8" x2="13" y2="16"/><line x1="17" y1="8" x2="17" y2="16"/>
   </svg>
 )
+const XIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-tertiary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+const ChatIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+)
+const NudgeAlertIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+    <line x1="12" y1="9" x2="12" y2="13"/>
+    <line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="2.5"/>
+  </svg>
+)
 
 /* ── Data ── */
 const CONFIDENCE = {
@@ -97,7 +118,7 @@ const REASONS = [
   'Other',
 ]
 
-const SIGNIFICANT_DIFF = 2  // cases away from estimate before prompting
+const SIGNIFICANT_DIFF = 2
 
 const ITEMS = [
   {
@@ -132,6 +153,146 @@ const ITEMS = [
   },
 ]
 
+/* ── Nudge card (pattern nudges) ── */
+function NudgeCard({ nudge, onDismiss }) {
+  const [tipOpen, setTipOpen] = useState(false)
+
+  const content = nudge.type === 'seldom' ? {
+    headline: 'Associates achieving strong results typically fully verify stock on low- and medium-confidence counts.',
+    tip: 'Physically checking both the floor display and backroom before confirming the estimate takes ~30 seconds and significantly improves system accuracy over time.',
+  } : nudge.type === 'decrease' ? {
+    headline: `Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.`,
+    tip: `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercount corrections on high-confidence items can trigger overordering.`,
+  } : {
+    headline: `Significant count increases on high-confidence Citrus items in this store have been associated with an estimated $180 in lost sales last month.`,
+    tip: "Before adding cases above the estimate, confirm the count includes only stock not yet scanned in today's incoming. Overcounting high-confidence items can delay future reorders.",
+  }
+
+  return (
+    <div style={{
+      background: '#FFFBEB', border: '1.5px solid #FDE68A',
+      borderRadius: 12, padding: '10px 12px', marginBottom: 10,
+      position: 'relative',
+    }}>
+      <button onClick={onDismiss} style={{ position: 'absolute', top: 8, right: 8, padding: 3 }}>
+        <XIcon />
+      </button>
+      <div style={{ display: 'flex', gap: 8, paddingRight: 22 }}>
+        <div style={{ flexShrink: 0, marginTop: 1 }}><NudgeAlertIcon /></div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Heads up</div>
+          <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5, marginBottom: tipOpen ? 8 : 5 }}>
+            {content.headline}
+          </div>
+          {!tipOpen ? (
+            <button onClick={() => setTipOpen(true)} style={{
+              fontSize: 11, fontWeight: 700, color: 'var(--amber)',
+              textDecoration: 'underline', textUnderlineOffset: 2,
+            }}>
+              Quick tip →
+            </button>
+          ) : (
+            <div style={{
+              background: 'rgba(255,255,255,0.65)', borderRadius: 8, padding: '7px 9px',
+              fontSize: 11, color: '#92400E', lineHeight: 1.5,
+            }}>
+              {content.tip}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ── Feedback sheet ── */
+function FeedbackSheet({ onClose }) {
+  const [selected, setSelected] = useState(null)
+  const [details, setDetails]   = useState('')
+  const [done, setDone]         = useState(false)
+
+  const OPTIONS = ['Estimate seems off', 'Wrong location info', 'Missing product data', 'Timing issue', 'Other']
+
+  return (
+    <div
+      onClick={e => e.target === e.currentTarget && onClose()}
+      style={{
+        position: 'absolute', inset: 0, zIndex: 200,
+        background: 'rgba(0,0,0,0.4)',
+        display: 'flex', alignItems: 'flex-end',
+      }}
+    >
+      <div style={{
+        width: '100%', background: 'white',
+        borderRadius: '16px 16px 0 0',
+        padding: '16px 16px 20px',
+        boxShadow: '0 -4px 24px rgba(0,0,0,0.12)',
+      }}>
+        {done ? (
+          <div style={{ textAlign: 'center', padding: '10px 0 6px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 10 }}>
+              <CheckIcon size={28} color="var(--green-primary)" />
+            </div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
+              Feedback received
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', lineHeight: 1.55, marginBottom: 18 }}>
+              Thanks! Your input helps improve future recommendations and may be surfaced back to you when it leads to better results.
+            </div>
+            <button onClick={onClose} style={{
+              padding: '12px 32px', borderRadius: 22,
+              background: 'var(--green-primary)', color: 'white',
+              fontSize: 14, fontWeight: 700,
+            }}>Done</button>
+          </div>
+        ) : (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+              <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Share feedback</span>
+              <button onClick={onClose} style={{ padding: 4 }}><XIcon /></button>
+            </div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 14, lineHeight: 1.5 }}>
+              Helps improve future recommendations and may be surfaced back to you.
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 14 }}>
+              {OPTIONS.map(opt => (
+                <button key={opt} onClick={() => setSelected(s => s === opt ? null : opt)} style={{
+                  padding: '7px 12px', borderRadius: 20, fontSize: 12, fontWeight: 600,
+                  border: `1.5px solid ${selected === opt ? 'var(--green-primary)' : 'var(--border)'}`,
+                  background: selected === opt ? 'var(--green-light)' : 'white',
+                  color: selected === opt ? 'var(--green-primary)' : 'var(--text-secondary)',
+                }}>{opt}</button>
+              ))}
+            </div>
+            <textarea
+              placeholder="Add details (optional)"
+              value={details}
+              onChange={e => setDetails(e.target.value)}
+              rows={2}
+              style={{
+                width: '100%', padding: '10px 12px', borderRadius: 10,
+                border: '1.5px solid var(--border)', fontSize: 13,
+                color: 'var(--text-primary)', resize: 'none', marginBottom: 12,
+                fontFamily: 'inherit', outline: 'none',
+              }}
+            />
+            <button
+              onClick={() => setDone(true)}
+              disabled={!selected}
+              style={{
+                width: '100%', padding: '13px', borderRadius: 22,
+                background: selected ? 'var(--green-primary)' : '#E5E7EB',
+                color: selected ? 'white' : 'var(--text-tertiary)',
+                fontSize: 14, fontWeight: 700, transition: 'all 0.2s',
+              }}
+            >Submit feedback</button>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
+
 /* ── Item card ── */
 function ItemCard({ item, state, onSave, onCount, onReason }) {
   const conf = CONFIDENCE[item.confidence]
@@ -160,23 +321,17 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
         </div>
 
         {/* SKU */}
-        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>
-          {item.sku}
-        </div>
+        <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{item.sku}</div>
 
         {/* Location detail */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
             <MapPinIcon />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>
-              Floor: {item.floorLoc}
-            </span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>Floor: {item.floorLoc}</span>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <BoxIcon />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>
-              Back: {item.backLoc}
-            </span>
+            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>Back: {item.backLoc}</span>
           </div>
         </div>
 
@@ -187,10 +342,7 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
             <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
               {item.systemEstimate} CS
             </span>
-            <span style={{
-              fontSize: 11, fontWeight: 700, color: conf.color,
-              background: conf.bg, borderRadius: 20, padding: '2px 8px',
-            }}>
+            <span style={{ fontSize: 11, fontWeight: 700, color: conf.color, background: conf.bg, borderRadius: 20, padding: '2px 8px' }}>
               {conf.label}
             </span>
           </div>
@@ -218,20 +370,15 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
 
       {/* Count controls */}
       <div style={{ padding: '10px 14px 12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: diffFromEstimate && !state.saved ? 10 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: significantDiff && !state.saved ? 10 : 0 }}>
 
-          {/* Minus */}
-          <button
-            onClick={() => onCount(Math.max(0, state.count - 1))}
-            style={{
-              width: 40, height: 40, borderRadius: '50%',
-              border: '1.5px solid var(--border)', background: 'white',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
-            }}
-          >−</button>
+          <button onClick={() => onCount(Math.max(0, state.count - 1))} style={{
+            width: 40, height: 40, borderRadius: '50%',
+            border: '1.5px solid var(--border)', background: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
+          }}>−</button>
 
-          {/* Editable count field */}
           <div style={{ flex: 1, position: 'relative' }}>
             <input
               type="number" min="0"
@@ -258,35 +405,25 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
             }}>CS</span>
           </div>
 
-          {/* Plus */}
-          <button
-            onClick={() => onCount(state.count + 1)}
-            style={{
-              width: 40, height: 40, borderRadius: '50%',
-              border: '1.5px solid var(--border)', background: 'white',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
-            }}
-          >+</button>
+          <button onClick={() => onCount(state.count + 1)} style={{
+            width: 40, height: 40, borderRadius: '50%',
+            border: '1.5px solid var(--border)', background: 'white',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 22, color: 'var(--text-primary)', flexShrink: 0, lineHeight: 1,
+          }}>+</button>
 
-          {/* Save */}
-          <button
-            onClick={onSave}
-            style={{
-              padding: '10px 16px', borderRadius: 10, flexShrink: 0,
-              background: state.saved ? 'var(--green-light)' : 'var(--green-primary)',
-              color: state.saved ? 'var(--green-primary)' : 'white',
-              fontSize: 14, fontWeight: 700,
-              display: 'flex', alignItems: 'center', gap: 5,
-            }}
-          >
-            {state.saved
-              ? <><CheckIcon size={14} /> Saved</>
-              : 'Save'}
+          <button onClick={onSave} style={{
+            padding: '10px 16px', borderRadius: 10, flexShrink: 0,
+            background: state.saved ? 'var(--green-light)' : 'var(--green-primary)',
+            color: state.saved ? 'var(--green-primary)' : 'white',
+            fontSize: 14, fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 5,
+          }}>
+            {state.saved ? <><CheckIcon size={14} /> Saved</> : 'Save'}
           </button>
         </div>
 
-        {/* Reason picker — appears only on significant adjustments (≥2 CS from estimate) */}
+        {/* Reason picker — significant adjustments only */}
         {significantDiff && !state.saved && (
           <div style={{ background: '#FAFAFA', borderRadius: 10, padding: '9px 10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 7 }}>
@@ -295,16 +432,12 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {REASONS.map(r => (
-                <button
-                  key={r}
-                  onClick={() => onReason(r === state.reason ? null : r)}
-                  style={{
-                    padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
-                    border: `1.5px solid ${state.reason === r ? 'var(--amber)' : 'var(--border)'}`,
-                    background: state.reason === r ? '#FEF3C7' : 'white',
-                    color: state.reason === r ? 'var(--amber)' : 'var(--text-secondary)',
-                  }}
-                >{r}</button>
+                <button key={r} onClick={() => onReason(r === state.reason ? null : r)} style={{
+                  padding: '5px 10px', borderRadius: 20, fontSize: 11, fontWeight: 600,
+                  border: `1.5px solid ${state.reason === r ? 'var(--amber)' : 'var(--border)'}`,
+                  background: state.reason === r ? '#FEF3C7' : 'white',
+                  color: state.reason === r ? 'var(--amber)' : 'var(--text-secondary)',
+                }}>{r}</button>
               ))}
             </div>
           </div>
@@ -325,9 +458,29 @@ export default function InventoryCount({ onBack, onDone }) {
       reason: null,
     }]))
   )
+  const [nudge, setNudge]             = useState(null)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const getState    = id => itemStates[id]
   const updateState = (id, patch) => setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+
+  const handleSave = id => {
+    const st   = getState(id)
+    const item = ITEMS.find(i => i.id === id)
+    const diff = Math.abs(st.count - item.systemEstimate)
+    const isSignificant = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
+
+    updateState(id, { saved: true })
+
+    if ((item.confidence === 'medium' || item.confidence === 'low') && diff === 0) {
+      setNudge({ type: 'seldom' })
+    } else if (item.confidence === 'high' && isSignificant) {
+      setNudge({
+        type: st.count < item.systemEstimate ? 'decrease' : 'increase',
+        backLoc: item.backLoc,
+      })
+    }
+  }
 
   const savedCount = ITEMS.filter(i => getState(i.id).saved).length
   const allSaved   = savedCount === ITEMS.length
@@ -343,41 +496,36 @@ export default function InventoryCount({ onBack, onDone }) {
           <BackArrowIcon />
         </button>
 
-        {/* Location view tabs — specific section labels replace generic "Back" / "Floor" */}
         {['floor', 'back'].map(view => {
           const isActive = locationView === view
           return (
-            <button
-              key={view}
-              onClick={() => setLocationView(view)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 4,
-                padding: '5px 9px', borderRadius: 20, flexShrink: 1, minWidth: 0,
-                background: isActive ? 'var(--green-primary)' : 'white',
-                border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
-                color: isActive ? 'white' : 'var(--text-secondary)',
-                fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
-              }}
-            >
-              {view === 'floor'
-                ? <FloorTabIcon active={isActive} />
-                : <BackTabIcon active={isActive} />}
+            <button key={view} onClick={() => setLocationView(view)} style={{
+              display: 'flex', alignItems: 'center', gap: 4,
+              padding: '5px 9px', borderRadius: 20, flexShrink: 1, minWidth: 0,
+              background: isActive ? 'var(--green-primary)' : 'white',
+              border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
+              color: isActive ? 'white' : 'var(--text-secondary)',
+              fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap',
+            }}>
+              {view === 'floor' ? <FloorTabIcon active={isActive} /> : <BackTabIcon active={isActive} />}
               {view === 'floor' ? 'Floor: Aisle 10' : 'Back: PR-A03'}
             </button>
           )
         })}
 
         <div style={{ flex: 1 }} />
+        <button onClick={() => setFeedbackOpen(true)} style={{ padding: 5 }} aria-label="Add feedback">
+          <ChatIcon />
+        </button>
         <button style={{ padding: 5 }}><HelpIcon /></button>
         <button style={{ padding: 5 }}><SearchIcon /></button>
       </div>
 
-      {/* Full-width progress bar */}
+      {/* Progress bar */}
       <div style={{ height: 4, background: 'var(--border)' }}>
         <div style={{
           height: '100%', background: 'var(--green-primary)',
-          width: `${progress * 100}%`,
-          transition: 'width 0.4s ease',
+          width: `${progress * 100}%`, transition: 'width 0.4s ease',
           borderRadius: '0 2px 2px 0',
         }} />
       </div>
@@ -385,7 +533,6 @@ export default function InventoryCount({ onBack, onDone }) {
       {/* Scrollable body */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', paddingBottom: allSaved ? 90 : 24 }}>
 
-        {/* Header */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             Today's categories
@@ -401,20 +548,15 @@ export default function InventoryCount({ onBack, onDone }) {
           </button>
         </div>
 
-        {/* Category group */}
         <div>
-          {/* Category row */}
+          {/* Category header */}
           <button
             onClick={() => setCategoryOpen(o => !o)}
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, padding: 0, background: 'transparent' }}
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>
-                Citrus Fruits
-              </span>
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
-                {savedCount}/{ITEMS.length} scanned
-              </span>
+              <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Citrus Fruits</span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{savedCount}/{ITEMS.length} scanned</span>
             </div>
             <span style={{ color: 'var(--text-tertiary)', display: 'flex' }}>
               {categoryOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
@@ -430,21 +572,37 @@ export default function InventoryCount({ onBack, onDone }) {
             }} />
           </div>
 
+          {/* Pattern nudge — appears after a save triggers a pattern */}
+          {nudge && categoryOpen && (
+            <NudgeCard key={nudge.type} nudge={nudge} onDismiss={() => setNudge(null)} />
+          )}
+
           {/* Item cards */}
           {categoryOpen && ITEMS.map(item => (
             <ItemCard
               key={item.id}
               item={item}
               state={getState(item.id)}
-              onSave={() => updateState(item.id, { saved: true })}
+              onSave={() => handleSave(item.id)}
               onCount={count => updateState(item.id, { count, saved: false })}
               onReason={reason => updateState(item.id, { reason })}
             />
           ))}
         </div>
+
+        {/* Feedback link at bottom of list */}
+        <div style={{ textAlign: 'center', paddingTop: 4 }}>
+          <button
+            onClick={() => setFeedbackOpen(true)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500 }}
+          >
+            <ChatIcon />
+            Add feedback
+          </button>
+        </div>
       </div>
 
-      {/* Complete count bar — appears when all items saved */}
+      {/* Complete count bar */}
       {allSaved && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
@@ -452,15 +610,12 @@ export default function InventoryCount({ onBack, onDone }) {
           padding: '11px 16px 16px',
           boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
         }}>
-          <button
-            onClick={onDone}
-            style={{
-              width: '100%', padding: '14px', borderRadius: 12,
-              background: 'var(--green-primary)', color: 'white',
-              fontSize: 15, fontWeight: 700,
-              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-            }}
-          >
+          <button onClick={onDone} style={{
+            width: '100%', padding: '14px', borderRadius: 12,
+            background: 'var(--green-primary)', color: 'white',
+            fontSize: 15, fontWeight: 700,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+          }}>
             <CheckIcon size={16} color="white" />
             Complete Count ({ITEMS.length}/{ITEMS.length} items)
           </button>
@@ -479,6 +634,9 @@ export default function InventoryCount({ onBack, onDone }) {
           <BarcodeIcon />
         </div>
       )}
+
+      {/* Feedback sheet overlay */}
+      {feedbackOpen && <FeedbackSheet onClose={() => setFeedbackOpen(false)} />}
     </div>
   )
 }

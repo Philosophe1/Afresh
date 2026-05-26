@@ -75,6 +75,19 @@ const AlertIcon = () => (
     <line x1="12" y1="17" x2="12.01" y2="17" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
   </svg>
 )
+const XIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-tertiary)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+)
+const ChatIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-secondary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+  </svg>
+)
 
 /* ── unit badge ── */
 const UnitBadge = ({ label, amber }) => (
@@ -420,6 +433,99 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
   )
 }
 
+/* ── feedback sheet ── */
+function FeedbackSheet({ onClose }) {
+  const [selected, setSelected] = useState(null)
+  const [details, setDetails]   = useState('')
+  const [done, setDone]         = useState(false)
+  const OPTIONS = ['Recommendation seems wrong', 'Missing context', 'Data looks outdated', 'Timing issue', 'Other']
+
+  if (done) {
+    return (
+      <div onClick={e => { if (e.target === e.currentTarget) onClose() }}
+        style={{ position: 'absolute', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end' }}>
+        <div style={{ width: '100%', background: 'white', borderRadius: '16px 16px 0 0', padding: '24px 20px 32px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'var(--green-light)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <CheckIcon size={22} />
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)' }}>Feedback received</div>
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.5 }}>
+              Your input helps improve recommendations. When it leads to better results, we'll let you know.
+            </div>
+            <button onClick={onClose} style={{
+              marginTop: 4, width: '100%', padding: '13px', borderRadius: 12,
+              background: 'var(--green-primary)', color: 'white', fontSize: 15, fontWeight: 700,
+            }}>
+              Done
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div onClick={e => { if (e.target === e.currentTarget) onClose() }}
+      style={{ position: 'absolute', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ width: '100%', background: 'white', borderRadius: '16px 16px 0 0', padding: '20px 20px 32px' }}>
+
+        {/* Header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Add feedback</div>
+          <button onClick={onClose} style={{ padding: 4 }}><XIcon /></button>
+        </div>
+
+        <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 12 }}>
+          What's the issue? (select one)
+        </div>
+
+        {/* Category chips */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 14 }}>
+          {OPTIONS.map(opt => (
+            <button key={opt} onClick={() => setSelected(opt)} style={{
+              padding: '7px 13px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+              border: `1.5px solid ${selected === opt ? 'var(--green-primary)' : 'var(--border)'}`,
+              background: selected === opt ? 'var(--green-light)' : 'white',
+              color: selected === opt ? 'var(--green-primary)' : 'var(--text-secondary)',
+              transition: 'all 0.15s ease',
+            }}>
+              {opt}
+            </button>
+          ))}
+        </div>
+
+        {/* Optional details */}
+        <textarea
+          placeholder="Additional details (optional)"
+          value={details}
+          onChange={e => setDetails(e.target.value)}
+          rows={3}
+          style={{
+            width: '100%', padding: '10px 12px', borderRadius: 10,
+            border: '1.5px solid var(--border)', fontSize: 13, color: 'var(--text-primary)',
+            resize: 'none', fontFamily: 'inherit', marginBottom: 14,
+            outline: 'none',
+          }}
+        />
+
+        <button
+          disabled={!selected}
+          onClick={() => setDone(true)}
+          style={{
+            width: '100%', padding: '13px', borderRadius: 12, fontSize: 15, fontWeight: 700,
+            background: selected ? 'var(--green-primary)' : '#E5E7EB',
+            color: selected ? 'white' : 'var(--text-tertiary)',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  )
+}
+
 /* ── main screen ── */
 export default function OrderReview({ onBack, onSubmit }) {
   const [itemStates, setItemStates] = useState(
@@ -428,6 +534,7 @@ export default function OrderReview({ onBack, onSubmit }) {
     }]))
   )
   const [expandedItems, setExpandedItems] = useState(new Set())
+  const [feedbackOpen, setFeedbackOpen]   = useState(false)
 
   const getState    = id => itemStates[id]
   const updateState = (id, patch) => setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
@@ -475,6 +582,7 @@ export default function OrderReview({ onBack, onSubmit }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
+      {feedbackOpen && <FeedbackSheet onClose={() => setFeedbackOpen(false)} />}
       <StatusBar time="9:30" />
 
       {/* Nav header */}
@@ -483,6 +591,7 @@ export default function OrderReview({ onBack, onSubmit }) {
         <span style={{ flex: 1, textAlign: 'center', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
           Order review
         </span>
+        <button onClick={() => setFeedbackOpen(true)} style={{ padding: 6 }} aria-label="Add feedback"><ChatIcon /></button>
         <button style={{ padding: 6 }}><HelpIcon /></button>
         <button style={{ padding: 6 }}><SearchIcon /></button>
       </div>
