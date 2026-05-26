@@ -116,7 +116,7 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 18.50,
     confidence: 'medium',
-    rationale: 'Based on expected sales of 8 CS over next 5 days',
+    rationale: 'Based on expected sales of 8 CS in next 5 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 6 CS' },
       { icon: 'trend',    text: 'Recent sales trend: +12% vs last week' },
@@ -140,7 +140,7 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 22.00,
     confidence: 'high',
-    rationale: 'Based on expected sales of 7 CS over next 4 days',
+    rationale: 'Based on expected sales of 7 CS in next 4 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 1 CS' },
       { icon: 'trend',    text: 'Recent sales trend: steady vs last week' },
@@ -279,7 +279,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
         {!isActioned && item.confidence === 'medium' && (
           <>
             <Divider my={0} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '4px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 0' }}>
               <SparkleIcon />
               <span style={{ fontSize: 12, color: 'var(--amber)', fontWeight: 600 }}>
                 Moderate confidence — please verify
@@ -293,11 +293,11 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
       {!isActioned && (
         <div style={{ padding: '0 14px 13px' }}>
 
-          <Divider my={6} />
+          <div style={{ height: 1, background: 'var(--border)', marginBottom: 6 }} />
 
           {/* Rationale */}
           <div style={{ background: '#F0F9F1', borderRadius: 9, padding: '5px 9px', marginBottom: 8, borderLeft: '3px solid var(--green-primary)' }}>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {item.rationale}
             </div>
           </div>
