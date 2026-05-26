@@ -4,7 +4,7 @@ export default function StatusBar({ time = '9:30' }) {
       display: 'flex',
       justifyContent: 'space-between',
       alignItems: 'center',
-      padding: '14px 22px 6px',
+      padding: '10px 18px 4px',
       background: 'var(--page-bg)',
     }}>
       <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>

@@ -127,21 +127,21 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
   return (
     <div style={{
       background: 'var(--card-bg)',
-      borderRadius: 16,
-      marginBottom: 12,
+      borderRadius: 13,
+      marginBottom: 10,
       boxShadow: 'var(--shadow-sm)',
       overflow: 'hidden',
       border: isActioned ? 'none' : (item.needsReview ? '1.5px solid #FECACA' : '1.5px solid var(--border)'),
       transition: 'border 0.25s ease',
     }}>
       {/* Card header */}
-      <div style={{ padding: '16px 16px 0' }}>
+      <div style={{ padding: '13px 14px 0' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
           <div style={{ flex: 1, marginRight: 8 }}>
-            <div style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
               {item.name}
             </div>
-            <div style={{ fontSize: 13, color: 'var(--text-tertiary)', marginTop: 2 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginTop: 2 }}>
               SKU: {item.sku}
             </div>
           </div>
@@ -237,16 +237,16 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
 
       {/* Rationale section — hidden when actioned */}
       {!isActioned && (
-        <div style={{ padding: '0 16px 16px' }}>
+        <div style={{ padding: '0 14px 14px' }}>
           {/* Rationale summary box */}
           <div style={{
             background: '#F0F9F1',
-            borderRadius: 10,
-            padding: '10px 12px',
-            marginBottom: 14,
+            borderRadius: 9,
+            padding: '8px 10px',
+            marginBottom: 10,
             borderLeft: '3px solid var(--green-primary)',
           }}>
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.45 }}>
               {item.rationale}
             </div>
           </div>
@@ -257,10 +257,10 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
               display: 'flex',
               alignItems: 'center',
               gap: 6,
-              marginBottom: 14,
+              marginBottom: 10,
               background: 'var(--amber-light)',
-              borderRadius: 8,
-              padding: '7px 10px',
+              borderRadius: 7,
+              padding: '6px 9px',
             }}>
               <SparkleIcon />
               <span style={{ fontSize: 12, color: 'var(--amber)', fontWeight: 600 }}>
@@ -270,18 +270,18 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           )}
 
           {/* Key Drivers */}
-          <div style={{ marginBottom: 14 }}>
+          <div style={{ marginBottom: 10 }}>
             <div style={{
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: 700,
               color: 'var(--text-tertiary)',
               letterSpacing: '0.8px',
               textTransform: 'uppercase',
-              marginBottom: 8,
+              marginBottom: 7,
             }}>
               Key Drivers
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {item.keyDrivers.map((d, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
                   <div style={{ flexShrink: 0, width: 20, display: 'flex', justifyContent: 'center' }}>
@@ -294,34 +294,34 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           </div>
 
           {/* Divider */}
-          <div style={{ height: 1, background: 'var(--border)', marginBottom: 14 }} />
+          <div style={{ height: 1, background: 'var(--border)', marginBottom: 10 }} />
 
           {/* Risk section */}
-          <div style={{ marginBottom: 18 }}>
+          <div style={{ marginBottom: 12 }}>
             <div style={{
-              fontSize: 11,
+              fontSize: 10,
               fontWeight: 700,
               color: 'var(--text-tertiary)',
               letterSpacing: '0.8px',
               textTransform: 'uppercase',
-              marginBottom: 8,
+              marginBottom: 7,
             }}>
               Risk if Ordered Differently
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               {item.risks.map((r, i) => (
                 <div key={i} style={{
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: 9,
+                  gap: 8,
                   background: '#FFFBEB',
-                  borderRadius: 8,
-                  padding: '8px 10px',
+                  borderRadius: 7,
+                  padding: '7px 9px',
                 }}>
                   <div style={{ flexShrink: 0, marginTop: 1 }}>
                     <AlertIcon />
                   </div>
-                  <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.4 }}>
+                  <span style={{ fontSize: 12, color: 'var(--text-primary)', lineHeight: 1.4 }}>
                     <strong>Ordering {r.order} cases</strong> → {r.risk}
                   </span>
                 </div>
@@ -330,25 +330,25 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           </div>
 
           {/* Action buttons */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
             <button
               onClick={onConfirm}
               style={{
                 width: '100%',
-                padding: '14px',
-                borderRadius: 14,
+                padding: '12px',
+                borderRadius: 12,
                 background: 'var(--green-primary)',
                 color: 'white',
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: 700,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 8,
+                gap: 7,
                 letterSpacing: '-0.2px',
               }}
             >
-              <CheckIcon size={17} color="white" />
+              <CheckIcon size={15} color="white" />
               Confirm Recommended Order
             </button>
 
@@ -356,12 +356,12 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
               onClick={onToggleOverride}
               style={{
                 width: '100%',
-                padding: '14px',
-                borderRadius: 14,
+                padding: '12px',
+                borderRadius: 12,
                 border: `2px solid ${state.showOverride ? 'var(--amber)' : 'var(--border)'}`,
                 background: state.showOverride ? 'var(--amber-light)' : 'transparent',
                 color: state.showOverride ? 'var(--amber)' : 'var(--text-secondary)',
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: 700,
                 letterSpacing: '-0.2px',
                 transition: 'all 0.2s ease',
@@ -374,19 +374,19 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
             {state.showOverride && (
               <div style={{
                 background: '#FFFBEB',
-                borderRadius: 14,
-                padding: '14px',
+                borderRadius: 11,
+                padding: '11px',
                 border: '1.5px solid #FDE68A',
               }}>
                 <div style={{
-                  fontSize: 13,
+                  fontSize: 12,
                   fontWeight: 600,
                   color: 'var(--text-secondary)',
-                  marginBottom: 10,
+                  marginBottom: 8,
                 }}>
                   Enter new quantity (cases)
                 </div>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <div style={{ position: 'relative', flex: 1 }}>
                     <input
                       type="number"
@@ -396,11 +396,11 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                       onChange={e => onOverrideInput(e.target.value)}
                       style={{
                         width: '100%',
-                        padding: '12px 14px',
-                        borderRadius: 10,
+                        padding: '10px 12px',
+                        borderRadius: 9,
                         border: `1.5px solid ${overrideErr ? 'var(--red)' : '#FDE68A'}`,
                         background: 'white',
-                        fontSize: 18,
+                        fontSize: 16,
                         fontWeight: 700,
                         color: 'var(--text-primary)',
                       }}
@@ -408,14 +408,14 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                     {state.overrideInput && !overrideErr && (
                       <span style={{
                         position: 'absolute',
-                        right: 12,
+                        right: 10,
                         top: '50%',
                         transform: 'translateY(-50%)',
                         background: 'var(--amber)',
                         color: 'white',
-                        borderRadius: 5,
-                        padding: '2px 7px',
-                        fontSize: 11,
+                        borderRadius: 4,
+                        padding: '2px 6px',
+                        fontSize: 10,
                         fontWeight: 700,
                       }}>
                         {item.unit}
@@ -426,13 +426,13 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                     onClick={onSubmitOverride}
                     disabled={!state.overrideInput || overrideErr}
                     style={{
-                      padding: '12px 20px',
-                      borderRadius: 10,
+                      padding: '10px 14px',
+                      borderRadius: 9,
                       background: (!state.overrideInput || overrideErr)
                         ? '#E5E7EB'
                         : 'var(--amber)',
                       color: (!state.overrideInput || overrideErr) ? 'var(--text-tertiary)' : 'white',
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: 700,
                       transition: 'all 0.2s ease',
                       letterSpacing: '-0.1px',
@@ -443,7 +443,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                   </button>
                 </div>
                 {overrideErr && (
-                  <div style={{ fontSize: 12, color: 'var(--red)', marginTop: 6 }}>
+                  <div style={{ fontSize: 11, color: 'var(--red)', marginTop: 5 }}>
                     Please enter a valid quantity (whole number ≥ 1)
                   </div>
                 )}
@@ -547,16 +547,16 @@ export default function OrderReview({ onBack, onSubmit }) {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        padding: '6px 14px 10px',
-        gap: 6,
+        padding: '4px 12px 8px',
+        gap: 4,
       }}>
-        <button onClick={onBack} style={{ padding: 6, marginLeft: -6 }}>
+        <button onClick={onBack} style={{ padding: 6, marginLeft: -4 }}>
           <BackIcon />
         </button>
         <span style={{
           flex: 1,
           textAlign: 'center',
-          fontSize: 17,
+          fontSize: 16,
           fontWeight: 700,
           color: 'var(--text-primary)',
           letterSpacing: '-0.3px',
@@ -568,7 +568,7 @@ export default function OrderReview({ onBack, onSubmit }) {
       </div>
 
       {/* Scrollable body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 16px 110px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '4px 14px 90px' }}>
 
         {/* Items to Review section */}
         {reviewNeeded.length > 0 && (
@@ -662,21 +662,21 @@ export default function OrderReview({ onBack, onSubmit }) {
         right: 0,
         background: 'white',
         borderTop: '1px solid var(--border)',
-        padding: '12px 16px 20px',
+        padding: '10px 14px 14px',
         display: 'flex',
         alignItems: 'center',
-        gap: 14,
+        gap: 12,
         boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
       }}>
         <div style={{ flexShrink: 0 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             {totalCS} CS
           </div>
         </div>
         <div style={{ flexShrink: 0 }}>
-          <div style={{ fontSize: 11, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total cost</div>
-          <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total cost</div>
+          <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             ${totalCost.toFixed(2)}
           </div>
         </div>
@@ -685,11 +685,11 @@ export default function OrderReview({ onBack, onSubmit }) {
           disabled={!allActioned}
           style={{
             flex: 1,
-            padding: '15px',
-            borderRadius: 30,
+            padding: '13px',
+            borderRadius: 28,
             background: allActioned ? 'var(--green-primary)' : '#C8D9C9',
             color: 'white',
-            fontSize: 16,
+            fontSize: 15,
             fontWeight: 700,
             letterSpacing: '-0.2px',
             transition: 'background 0.25s ease',

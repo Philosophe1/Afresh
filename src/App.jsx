@@ -21,12 +21,9 @@ export default function App() {
   return (
     <div style={{
       width: '100%',
-      height: '844px',
-      maxHeight: '100dvh',
+      height: '100%',
       background: 'var(--card-bg)',
-      borderRadius: 36,
       overflow: 'hidden',
-      boxShadow: '0 32px 80px rgba(0,0,0,0.30), 0 0 0 1px rgba(0,0,0,0.06)',
       position: 'relative',
     }}>
       {screen === 'tasks' && (

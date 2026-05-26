@@ -9,7 +9,7 @@ const CheckIcon = ({ size = 20, color = 'var(--green-primary)' }) => (
 )
 
 const SearchIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
     stroke="var(--text-primary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <circle cx="11" cy="11" r="8" />
     <line x1="21" y1="21" x2="16.65" y2="16.65" />
@@ -17,7 +17,7 @@ const SearchIcon = () => (
 )
 
 const ClipboardIcon = () => (
-  <svg width="22" height="22" viewBox="0 0 24 24" fill="none"
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
     stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
     <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
@@ -51,21 +51,21 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        padding: '8px 18px 10px',
+        padding: '6px 16px 8px',
         gap: 10,
-        minHeight: 56,
+        minHeight: 50,
       }}>
         {/* Avatar */}
         <div style={{
-          width: 38,
-          height: 38,
+          width: 34,
+          height: 34,
           borderRadius: '50%',
           background: 'var(--green-primary)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           color: 'white',
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: 700,
           flexShrink: 0,
           letterSpacing: '0.5px',
@@ -78,16 +78,16 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
           <div style={{
             flex: 1,
             background: 'var(--green-primary)',
-            borderRadius: 26,
-            padding: '10px 18px',
+            borderRadius: 24,
+            padding: '8px 14px',
             display: 'flex',
             alignItems: 'center',
-            gap: 10,
+            gap: 8,
             boxShadow: '0 4px 14px rgba(45,92,52,0.35)',
           }}>
             <div style={{
-              width: 22,
-              height: 22,
+              width: 20,
+              height: 20,
               borderRadius: '50%',
               border: '2px solid rgba(255,255,255,0.9)',
               display: 'flex',
@@ -95,9 +95,9 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
               justifyContent: 'center',
               flexShrink: 0,
             }}>
-              <CheckIcon size={13} color="white" />
+              <CheckIcon size={12} color="white" />
             </div>
-            <span style={{ color: 'white', fontSize: 14, fontWeight: 600, letterSpacing: '-0.1px' }}>
+            <span style={{ color: 'white', fontSize: 13, fontWeight: 600, letterSpacing: '-0.1px' }}>
               Order submitted at {submitTime}
             </span>
           </div>
@@ -111,13 +111,13 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
       </div>
 
       {/* Scrollable content */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '2px 18px 110px' }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '0 16px 80px' }}>
         <h1 style={{
-          fontSize: 27,
+          fontSize: 24,
           fontWeight: 800,
           color: 'var(--text-primary)',
           letterSpacing: '-0.5px',
-          marginBottom: 18,
+          marginBottom: 14,
         }}>
           Today's tasks
         </h1>
@@ -125,38 +125,38 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
         {/* Task 1 — Inventory count (complete) */}
         <div style={{
           background: 'var(--card-bg)',
-          borderRadius: 16,
-          padding: '18px 16px',
-          marginBottom: 12,
+          borderRadius: 14,
+          padding: '14px',
+          marginBottom: 10,
           boxShadow: 'var(--shadow-sm)',
           display: 'flex',
           alignItems: 'flex-start',
-          gap: 14,
+          gap: 12,
         }}>
           <div style={{
-            width: 46,
-            height: 46,
-            borderRadius: 13,
+            width: 40,
+            height: 40,
+            borderRadius: 11,
             background: 'var(--green-light)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
           }}>
-            <CheckIcon size={23} />
+            <CheckIcon size={20} />
           </div>
           <div>
             <div style={{
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: 700,
               color: 'var(--text-primary)',
-              marginBottom: 4,
+              marginBottom: 3,
               letterSpacing: '-0.2px',
             }}>
               Today's inventory count
             </div>
             <div style={{
-              fontSize: 14,
+              fontSize: 13,
               color: 'var(--green-primary)',
               fontWeight: 500,
             }}>
@@ -168,17 +168,17 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
         {/* Task 2 — Order review */}
         <div style={{
           background: 'var(--card-bg)',
-          borderRadius: 16,
-          padding: '18px 16px',
+          borderRadius: 14,
+          padding: '14px',
           boxShadow: 'var(--shadow-sm)',
           display: 'flex',
           alignItems: 'flex-start',
-          gap: 14,
+          gap: 12,
         }}>
           <div style={{
-            width: 46,
-            height: 46,
-            borderRadius: 13,
+            width: 40,
+            height: 40,
+            borderRadius: 11,
             background: orderSubmitted ? 'var(--green-light)' : '#F3F4F6',
             display: 'flex',
             alignItems: 'center',
@@ -187,25 +187,25 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
             transition: 'background 0.3s ease',
           }}>
             {orderSubmitted
-              ? <CheckIcon size={23} />
+              ? <CheckIcon size={20} />
               : <ClipboardIcon />
             }
           </div>
           <div style={{ flex: 1 }}>
             <div style={{
-              fontSize: 16,
+              fontSize: 15,
               fontWeight: 700,
               color: 'var(--text-primary)',
-              marginBottom: 4,
+              marginBottom: 3,
               letterSpacing: '-0.2px',
             }}>
               Order review
             </div>
             <div style={{
-              fontSize: 14,
+              fontSize: 13,
               fontWeight: 500,
               color: orderSubmitted ? 'var(--green-primary)' : 'var(--text-secondary)',
-              marginBottom: 12,
+              marginBottom: 10,
               transition: 'color 0.3s ease',
             }}>
               {orderSubmitted
@@ -216,12 +216,12 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
             <button
               onClick={onViewOrder}
               style={{
-                padding: '9px 22px',
-                borderRadius: 24,
+                padding: '8px 18px',
+                borderRadius: 22,
                 border: '2px solid var(--green-primary)',
                 background: 'transparent',
                 color: 'var(--green-primary)',
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: 700,
                 letterSpacing: '-0.1px',
               }}
@@ -235,8 +235,8 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
       {/* Done button — bottom right */}
       <div style={{
         position: 'absolute',
-        bottom: 32,
-        right: 20,
+        bottom: 24,
+        right: 16,
         opacity: orderSubmitted ? 1 : 0,
         transform: orderSubmitted ? 'scale(1)' : 'scale(0.9)',
         transition: 'opacity 0.3s ease, transform 0.3s ease',
@@ -245,9 +245,9 @@ export default function TodaysTasks({ orderSubmitted, submitTime, onViewOrder })
         <button style={{
           background: 'var(--green-primary)',
           color: 'white',
-          borderRadius: 32,
-          padding: '15px 32px',
-          fontSize: 16,
+          borderRadius: 28,
+          padding: '13px 28px',
+          fontSize: 15,
           fontWeight: 700,
           boxShadow: '0 6px 18px rgba(45,92,52,0.4)',
           letterSpacing: '-0.1px',
