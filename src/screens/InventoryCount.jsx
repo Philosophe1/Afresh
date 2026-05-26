@@ -88,7 +88,16 @@ const CONFIDENCE = {
   low:    { label: 'Low',    color: 'var(--red)',           bg: '#FFEBEE' },
 }
 
-const REASONS = ['Damaged / Unsellable', 'New delivery', 'Wrong location', 'Display reduced', 'Other']
+const REASONS = [
+  'New endcap/display',
+  'Miscount yesterday',
+  'Damage/spoilage',
+  'Recent truck arrival',
+  'Backroom stock higher/lower than expected',
+  'Other',
+]
+
+const SIGNIFICANT_DIFF = 2  // cases away from estimate before prompting
 
 const ITEMS = [
   {
@@ -126,7 +135,7 @@ const ITEMS = [
 /* ── Item card ── */
 function ItemCard({ item, state, onSave, onCount, onReason }) {
   const conf = CONFIDENCE[item.confidence]
-  const diffFromEstimate = state.count !== item.systemEstimate
+  const significantDiff = Math.abs(state.count - item.systemEstimate) >= SIGNIFICANT_DIFF
 
   return (
     <div style={{
@@ -276,12 +285,12 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
           </button>
         </div>
 
-        {/* Structured reason picker — shown when count differs from estimate */}
-        {diffFromEstimate && !state.saved && (
-          <div>
-            <div style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 7 }}>
-              Differs from estimate ({item.systemEstimate} CS){' '}
-              <span style={{ fontWeight: 400 }}>— reason? (optional)</span>
+        {/* Reason picker — appears only on significant adjustments (≥2 CS from estimate) */}
+        {significantDiff && !state.saved && (
+          <div style={{ background: '#FAFAFA', borderRadius: 10, padding: '9px 10px', border: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 7 }}>
+              Reason for adjustment (helps improve system){' '}
+              <span style={{ fontWeight: 400, color: 'var(--text-tertiary)' }}>– Optional</span>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5 }}>
               {REASONS.map(r => (
