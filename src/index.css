@@ -55,5 +55,22 @@ input {
   outline: none;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 0; }
+/* Thin scrollbar for scrollable content areas */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #C8D5C9;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9DB8A0;
+}
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #C8D5C9 transparent;
+}
