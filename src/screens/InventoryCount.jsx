@@ -500,12 +500,12 @@ export default function InventoryCount({ onBack, onDone }) {
           const isActive = locationView === view
           return (
             <button key={view} onClick={() => setLocationView(view)} style={{
-              display: 'flex', alignItems: 'center', gap: 5,
-              padding: '6px 14px', borderRadius: 20, flexShrink: 0,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '9px 20px', borderRadius: 24, flexShrink: 0,
               background: isActive ? 'var(--green-primary)' : 'white',
               border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
               color: isActive ? 'white' : 'var(--text-secondary)',
-              fontSize: 13, fontWeight: 600,
+              fontSize: 14, fontWeight: 600,
             }}>
               {view === 'floor' ? <FloorTabIcon active={isActive} /> : <BackTabIcon active={isActive} />}
               {view === 'floor' ? 'Floor' : 'Back'}
