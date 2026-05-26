@@ -125,6 +125,7 @@ const ITEMS = [
     id: 'limes',
     name: 'Limes (each)',
     sku: '23985001',
+    unit: 'ea',
     incoming: 0, total: 3, display: 3,
     systemEstimate: 4,
     confidence: 'medium',
@@ -135,6 +136,7 @@ const ITEMS = [
     id: 'oranges',
     name: 'Navel Oranges (each)',
     sku: '23985012',
+    unit: 'ea',
     incoming: 2, total: 4, display: 4,
     systemEstimate: 6,
     confidence: 'high',
@@ -145,6 +147,7 @@ const ITEMS = [
     id: 'lemons',
     name: 'Lemons (each)',
     sku: '23985089',
+    unit: 'ea',
     incoming: 0, total: 2, display: 2,
     systemEstimate: 3,
     confidence: 'low',
@@ -294,45 +297,70 @@ function FeedbackSheet({ onClose }) {
 }
 
 /* ── Item card ── */
-function ItemCard({ item, state, onSave, onCount, onReason }) {
+function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason }) {
   const conf = CONFIDENCE[item.confidence]
   const diff = Math.abs(state.count - item.systemEstimate)
   const significantDiff = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
+  const unit = item.unit || 'CS'
+
+  /* Collapsed saved state */
+  if (state.saved) {
+    return (
+      <div style={{
+        background: 'white', borderRadius: 14, marginBottom: 10,
+        boxShadow: 'var(--shadow-sm)', border: '1.5px solid var(--green-primary)',
+        padding: '12px 14px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 }}>
+            {item.name}
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+            <CheckIcon size={12} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--green-primary)' }}>
+              Saved · {state.count} {unit}
+            </span>
+          </div>
+        </div>
+        <button onClick={onEdit} style={{
+          fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)',
+          padding: '7px 14px', borderRadius: 20,
+          border: '1.5px solid var(--border)', background: 'white',
+        }}>Edit</button>
+      </div>
+    )
+  }
 
   return (
     <div style={{
       background: 'white', borderRadius: 14, marginBottom: 10,
       overflow: 'hidden', boxShadow: 'var(--shadow-sm)',
-      border: state.saved ? '1.5px solid var(--green-primary)' : '1.5px solid var(--border)',
+      border: '1.5px solid var(--border)',
     }}>
       <div style={{ padding: '12px 14px 0' }}>
 
-        {/* Name + saved badge */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 2 }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', flex: 1, marginRight: 8, lineHeight: 1.3 }}>
-            {item.name}
-          </span>
-          {state.saved && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 4, background: 'var(--green-light)', borderRadius: 20, padding: '3px 9px', flexShrink: 0 }}>
-              <CheckIcon size={12} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--green-primary)' }}>Saved</span>
-            </div>
-          )}
+        {/* Name */}
+        <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2, lineHeight: 1.3 }}>
+          {item.name}
         </div>
 
         {/* SKU */}
         <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{item.sku}</div>
 
-        {/* Location detail */}
+        {/* Location — shows only the active view's line, no label prefix */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 3 }}>
-            <MapPinIcon />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>Floor: {item.floorLoc}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-            <BoxIcon />
-            <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>Back: {item.backLoc}</span>
-          </div>
+          {locationView === 'floor' ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <MapPinIcon />
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.floorLoc}</span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <BoxIcon />
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.backLoc}</span>
+            </div>
+          )}
         </div>
 
         {/* System estimate + confidence badge */}
@@ -340,7 +368,7 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
           <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>System estimate</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
             <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
-              {item.systemEstimate} CS
+              {item.systemEstimate} {unit}
             </span>
             <span style={{ fontSize: 11, fontWeight: 700, color: conf.color, background: conf.bg, borderRadius: 20, padding: '2px 8px' }}>
               {conf.label}
@@ -351,9 +379,9 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
         {/* Incoming / Total / Display */}
         <div style={{ display: 'flex', borderTop: '1px solid var(--border)', paddingTop: 9, paddingBottom: 9 }}>
           {[
-            { label: 'Incoming', value: `${item.incoming} CS` },
-            { label: 'Total',    value: `${item.total} CS` },
-            { label: 'Display',  value: `${item.display} CS` },
+            { label: 'Incoming', value: `${item.incoming} ${unit}` },
+            { label: 'Total',    value: `${item.total} ${unit}` },
+            { label: 'Display',  value: `${item.display} ${unit}` },
           ].map((col, i) => (
             <div key={i} style={{
               flex: 1,
@@ -370,7 +398,7 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
 
       {/* Count controls */}
       <div style={{ padding: '10px 14px 12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: significantDiff && !state.saved ? 10 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: significantDiff ? 10 : 0 }}>
 
           <button onClick={() => onCount(Math.max(0, state.count - 1))} style={{
             width: 40, height: 40, borderRadius: '50%',
@@ -389,20 +417,16 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
               }}
               style={{
                 width: '100%', padding: '8px 30px 8px 12px',
-                borderRadius: 10,
-                border: `1.5px solid ${state.saved ? 'var(--green-primary)' : 'var(--border)'}`,
-                background: state.saved ? 'var(--green-light)' : 'white',
-                fontSize: 18, fontWeight: 700,
-                color: state.saved ? 'var(--green-primary)' : 'var(--text-primary)',
-                textAlign: 'center', outline: 'none',
+                borderRadius: 10, border: '1.5px solid var(--border)',
+                background: 'white', fontSize: 18, fontWeight: 700,
+                color: 'var(--text-primary)', textAlign: 'center', outline: 'none',
               }}
             />
             <span style={{
               position: 'absolute', right: 9, top: '50%', transform: 'translateY(-50%)',
-              fontSize: 11, fontWeight: 700,
-              color: state.saved ? 'var(--green-primary)' : 'var(--text-tertiary)',
+              fontSize: 11, fontWeight: 700, color: 'var(--text-tertiary)',
               pointerEvents: 'none',
-            }}>CS</span>
+            }}>{unit}</span>
           </div>
 
           <button onClick={() => onCount(state.count + 1)} style={{
@@ -414,17 +438,13 @@ function ItemCard({ item, state, onSave, onCount, onReason }) {
 
           <button onClick={onSave} style={{
             padding: '10px 16px', borderRadius: 10, flexShrink: 0,
-            background: state.saved ? 'var(--green-light)' : 'var(--green-primary)',
-            color: state.saved ? 'var(--green-primary)' : 'white',
+            background: 'var(--green-primary)', color: 'white',
             fontSize: 14, fontWeight: 700,
-            display: 'flex', alignItems: 'center', gap: 5,
-          }}>
-            {state.saved ? <><CheckIcon size={14} /> Saved</> : 'Save'}
-          </button>
+          }}>Save</button>
         </div>
 
         {/* Reason picker — significant adjustments only */}
-        {significantDiff && !state.saved && (
+        {significantDiff && (
           <div style={{ background: '#FAFAFA', borderRadius: 10, padding: '9px 10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 7 }}>
               Reason for adjustment (helps improve system){' '}
@@ -580,7 +600,9 @@ export default function InventoryCount({ onBack, onDone }) {
               key={item.id}
               item={item}
               state={getState(item.id)}
+              locationView={locationView}
               onSave={() => handleSave(item.id)}
+              onEdit={() => updateState(item.id, { saved: false })}
               onCount={count => updateState(item.id, { count, saved: false })}
               onReason={reason => updateState(item.id, { reason })}
             />

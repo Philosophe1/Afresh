@@ -167,7 +167,7 @@ function ImpactBlock({ waste, sales, textColor, lightBg, showChart, weeklyTotals
   return (
     <>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <ImpactRow label="Waste reduced"  value={`~$${waste.toLocaleString()}`} color={textColor} />
+        <ImpactRow label="Waste prevented"  value={`~$${waste.toLocaleString()}`} color={textColor} />
         <div style={{ height: 1, background: 'var(--border)' }} />
         <ImpactRow label="Sales gained"   value={`~$${sales.toLocaleString()}`} color={textColor} />
         <div style={{ height: 1, background: 'var(--border)' }} />
