@@ -83,10 +83,10 @@ const UnitBadge = ({ label, amber }) => (
 /* ── section label ── */
 const SectionLabel = ({ children }) => (
   <div style={{
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: 700,
-    color: 'var(--text-tertiary)',
-    letterSpacing: '0.9px',
+    color: 'var(--text-secondary)',
+    letterSpacing: '0.7px',
     textTransform: 'uppercase',
     marginBottom: 7,
   }}>
@@ -108,9 +108,9 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 18.50,
     confidence: 'medium',
-    rationale: 'Based on expected sales of 18 cases over the next 5 days',
+    rationale: 'Based on expected sales of 18 CS in the next 5 days',
     keyDrivers: [
-      { icon: 'box',      text: 'Current inventory: 6 cases' },
+      { icon: 'box',      text: 'Current inventory: 6 CS' },
       { icon: 'trend',    text: 'Recent sales trend: +12% vs last week' },
       { icon: 'calendar', text: 'No upcoming promotion or major event' },
     ],
@@ -132,9 +132,9 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 22.00,
     confidence: 'high',
-    rationale: 'Based on expected sales of 7 cases over the next 4 days',
+    rationale: 'Based on expected sales of 7 CS in the next 4 days',
     keyDrivers: [
-      { icon: 'box',      text: 'Current inventory: 1 case' },
+      { icon: 'box',      text: 'Current inventory: 1 CS' },
       { icon: 'trend',    text: 'Recent sales trend: steady vs last week' },
       { icon: 'calendar', text: 'No upcoming events' },
     ],
@@ -218,7 +218,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
           ].map((col, i) => (
             <div key={i} style={{ flex: 1, borderRight: i < 2 ? '1px solid var(--border)' : 'none', paddingRight: i < 2 ? 10 : 0, paddingLeft: i > 0 ? 10 : 0 }}>
               <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 3, fontWeight: 500 }}>{col.label}</div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-primary)' }}>{col.value}</div>
+              <div style={{ fontSize: 14, fontWeight: 400, color: 'var(--text-primary)' }}>{col.value}</div>
             </div>
           ))}
         </div>
@@ -247,9 +247,9 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
         {!isActioned && item.confidence === 'medium' && (
           <>
             <Divider my={0} />
-            <div style={{ display: 'flex', alignItems: 'center', gap: 7, padding: '9px 0' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 0' }}>
               <SparkleIcon />
-              <span style={{ fontSize: 13, color: 'var(--amber)', fontWeight: 600 }}>
+              <span style={{ fontSize: 12, color: 'var(--amber)', fontWeight: 600 }}>
                 Moderate confidence — please verify
               </span>
             </div>
@@ -279,7 +279,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
                   <div style={{ flexShrink: 0, width: 18 }}>
                     <DriverIcon type={d.icon} />
                   </div>
-                  <span style={{ fontSize: 13, color: 'var(--text-primary)', lineHeight: 1.35 }}>{d.text}</span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.35 }}>{d.text}</span>
                 </div>
               ))}
             </div>
@@ -294,8 +294,8 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
               {item.risks.map((r, i) => (
                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 7, background: '#FFFBEB', borderRadius: 8, padding: '7px 10px' }}>
                   <div style={{ flexShrink: 0 }}><AlertIcon /></div>
-                  <span style={{ fontSize: 12, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    <strong>{r.order} cases</strong> → {r.risk}
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', lineHeight: 1.35 }}>
+                    <strong>{r.order} CS</strong> → {r.risk}
                   </span>
                 </div>
               ))}
