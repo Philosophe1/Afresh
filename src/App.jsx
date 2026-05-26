@@ -7,6 +7,7 @@ import InventoryCount from './screens/InventoryCount'
 export default function App() {
   const [screen, setScreen] = useState('tasks')
   const [countDone, setCountDone] = useState(false)
+  const [countStats, setCountStats] = useState(null)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
   const [submitTime, setSubmitTime] = useState('')
 
@@ -29,6 +30,7 @@ export default function App() {
       {screen === 'tasks' && (
         <TodaysTasks
           countDone={countDone}
+          countStats={countStats}
           orderSubmitted={orderSubmitted}
           submitTime={submitTime}
           onStartCount={() => setScreen('preSession')}
@@ -44,7 +46,7 @@ export default function App() {
       {screen === 'inventoryCount' && (
         <InventoryCount
           onBack={() => setScreen('preSession')}
-          onDone={() => { setCountDone(true); setScreen('tasks') }}
+          onDone={stats => { setCountDone(true); setCountStats(stats); setScreen('tasks') }}
         />
       )}
       {screen === 'orderReview' && (

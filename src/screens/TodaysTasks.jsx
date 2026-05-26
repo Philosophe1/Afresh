@@ -26,13 +26,21 @@ const ClipboardIcon = () => (
   </svg>
 )
 
-const STATS = [
-  { label: 'Items confirmed',            value: '2,100' },
-  { label: 'Adjusted inventory dollars', value: '$9,144' },
-  { label: 'Discrepancies caught',       value: '$4,411' },
-]
-
-export default function TodaysTasks({ countDone, orderSubmitted, submitTime, onStartCount, onViewOrder }) {
+export default function TodaysTasks({ countDone, countStats, orderSubmitted, submitTime, onStartCount, onViewOrder }) {
+  const stats = [
+    {
+      label: 'Items confirmed',
+      value: countStats ? countStats.itemsConfirmed.toLocaleString() : '0',
+    },
+    {
+      label: 'Adjusted inventory dollars',
+      value: countStats ? `$${countStats.adjustedDollars.toFixed(2)}` : '$0',
+    },
+    {
+      label: 'Discrepancies caught',
+      value: countStats ? `$${countStats.discrepanciesCaught.toFixed(2)}` : '$0',
+    },
+  ]
   const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
@@ -204,7 +212,7 @@ export default function TodaysTasks({ countDone, orderSubmitted, submitTime, onS
         </div>
 
         <div style={{ background: 'var(--card-bg)', borderRadius: 16, overflow: 'hidden', boxShadow: 'var(--shadow-sm)' }}>
-          {STATS.map((stat, i) => (
+          {stats.map((stat, i) => (
             <div key={i} style={{
               display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               padding: '15px 16px',

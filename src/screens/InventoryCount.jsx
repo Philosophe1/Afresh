@@ -147,6 +147,7 @@ const ITEMS = [
     name: 'Limes (each)',
     sku: '23985001',
     unit: 'ea',
+    unitPrice: 0.75,
     incoming: 0, total: 3, display: 3,
     systemEstimate: 4,
     confidence: 'medium',
@@ -158,6 +159,7 @@ const ITEMS = [
     name: 'Navel Oranges (each)',
     sku: '23985012',
     unit: 'ea',
+    unitPrice: 0.89,
     incoming: 2, total: 4, display: 4,
     systemEstimate: 6,
     confidence: 'high',
@@ -169,6 +171,7 @@ const ITEMS = [
     name: 'Lemons (each)',
     sku: '23985089',
     unit: 'ea',
+    unitPrice: 0.69,
     incoming: 0, total: 2, display: 2,
     systemEstimate: 3,
     confidence: 'low',
@@ -323,15 +326,28 @@ function FeedbackSheet({ onClose }) {
 
 /* ── Inventory complete summary ── */
 function CompleteSummary({ itemStates, onDone }) {
-  const floorTotal = ITEMS.reduce((s, i) => s + itemStates[i.id].floor.count, 0)
-  const backTotal  = ITEMS.reduce((s, i) => s + itemStates[i.id].back.count,  0)
+  const totalCount     = ITEMS.reduce((s, i) => s + itemStates[i.id].floor.count + itemStates[i.id].back.count, 0)
+  const inventoryValue = ITEMS.reduce((s, i) => s + (itemStates[i.id].floor.count + itemStates[i.id].back.count) * i.unitPrice, 0)
+  const adjustedDollars = ITEMS.reduce((s, i) =>
+    s + (Math.abs(itemStates[i.id].floor.count - i.systemEstimate) +
+         Math.abs(itemStates[i.id].back.count  - i.systemEstimate)) * i.unitPrice, 0)
+  const discrepanciesCaught = ITEMS.reduce((s, i) => {
+    const fd = Math.abs(itemStates[i.id].floor.count - i.systemEstimate)
+    const bd = Math.abs(itemStates[i.id].back.count  - i.systemEstimate)
+    const sig = Math.max(SIGNIFICANT_DIFF, i.systemEstimate * 0.10)
+    return s + (fd >= sig ? fd * i.unitPrice : 0) + (bd >= sig ? bd * i.unitPrice : 0)
+  }, 0)
+
+  const unit = ITEMS.every(i => i.unit === ITEMS[0].unit) ? ITEMS[0].unit : 'ea'
 
   const UnitBadge = () => (
     <span style={{
       fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)',
       background: '#F3F4F6', borderRadius: 4, padding: '1px 5px', marginLeft: 4,
-    }}>ea</span>
+    }}>{unit}</span>
   )
+
+  const handleDone = () => onDone({ itemsConfirmed: totalCount, adjustedDollars, discrepanciesCaught })
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
@@ -366,15 +382,15 @@ function CompleteSummary({ itemStates, onDone }) {
           boxShadow: 'var(--shadow-sm)',
         }}>
           <div style={{ flex: 1, padding: '14px 16px', borderRight: '1px solid var(--border)' }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Floor items</div>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Total inventory</div>
             <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', display: 'flex', alignItems: 'baseline' }}>
-              {floorTotal}<UnitBadge />
+              {totalCount}<UnitBadge />
             </div>
           </div>
           <div style={{ flex: 1, padding: '14px 16px' }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Back items</div>
-            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', display: 'flex', alignItems: 'baseline' }}>
-              {backTotal}<UnitBadge />
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Inventory value</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px' }}>
+              ${inventoryValue.toFixed(2)}
             </div>
           </div>
         </div>
@@ -412,7 +428,7 @@ function CompleteSummary({ itemStates, onDone }) {
 
       {/* Done button — bottom right */}
       <div style={{ position: 'absolute', bottom: 24, right: 20 }}>
-        <button onClick={onDone} style={{
+        <button onClick={handleDone} style={{
           padding: '14px 32px', borderRadius: 28,
           background: 'var(--green-primary)', color: 'white',
           fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
