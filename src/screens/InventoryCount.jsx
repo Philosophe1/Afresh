@@ -521,11 +521,11 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           {(locationView === 'floor'
             ? [
                 { label: 'Incoming', value: `${item.incoming} ${unit}` },
-                { label: 'Total',    value: `${item.total} ${unit}` },
+                { label: 'Total',    value: `${item.systemEstimate} ${unit}` },
                 { label: 'Display',  value: `${item.display} ${unit}` },
               ]
             : [
-                { label: 'Total', value: `${item.total} ${unit}` },
+                { label: 'Total', value: `${item.systemEstimate} ${unit}` },
               ]
           ).map((col, i, arr) => (
             <div key={i} style={{
