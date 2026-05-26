@@ -101,6 +101,27 @@ const NudgeAlertIcon = () => (
     <line x1="12" y1="17" x2="12.01" y2="17" strokeWidth="2.5"/>
   </svg>
 )
+const ClipboardDoneIcon = () => (
+  <svg width="96" height="96" viewBox="0 0 96 96" fill="none">
+    {/* clipboard body */}
+    <rect x="18" y="20" width="60" height="68" rx="6" fill="#C8E6C9"/>
+    <rect x="18" y="20" width="60" height="68" rx="6" stroke="#2D5C34" strokeWidth="2.5"/>
+    {/* clip at top */}
+    <rect x="34" y="14" width="28" height="14" rx="7" fill="#2D5C34"/>
+    {/* lines */}
+    <line x1="30" y1="44" x2="66" y2="44" stroke="#2D5C34" strokeWidth="3" strokeLinecap="round"/>
+    <line x1="30" y1="54" x2="66" y2="54" stroke="#2D5C34" strokeWidth="3" strokeLinecap="round"/>
+    <line x1="30" y1="64" x2="55" y2="64" stroke="#2D5C34" strokeWidth="3" strokeLinecap="round"/>
+    {/* sparkle top-right */}
+    <line x1="74" y1="16" x2="74" y2="24" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round"/>
+    <line x1="70" y1="20" x2="78" y2="20" stroke="#4CAF50" strokeWidth="2" strokeLinecap="round"/>
+    <line x1="71" y1="17" x2="77" y2="23" stroke="#4CAF50" strokeWidth="1.5" strokeLinecap="round"/>
+    <line x1="77" y1="17" x2="71" y2="23" stroke="#4CAF50" strokeWidth="1.5" strokeLinecap="round"/>
+    {/* check circle overlay bottom-right */}
+    <circle cx="68" cy="72" r="14" fill="#2D5C34"/>
+    <polyline points="61,72 66,77 75,65" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+)
 
 /* ── Data ── */
 const CONFIDENCE = {
@@ -156,18 +177,22 @@ const ITEMS = [
   },
 ]
 
-/* ── Nudge card (pattern nudges) ── */
+/* ── Nudge card ── */
 function NudgeCard({ nudge, onDismiss }) {
   const [tipOpen, setTipOpen] = useState(false)
+
+  const decreaseTip = nudge.locationView === 'floor'
+    ? `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`
+    : `Before submitting a lower count, verify the floor display (${nudge.floorLoc}) to ensure no additional stock was placed there. Undercounts on high-confidence items can trigger overordering.`
 
   const content = nudge.type === 'seldom' ? {
     headline: 'Associates achieving strong results typically fully verify stock on low- and medium-confidence counts.',
     tip: 'Physically checking both the floor display and backroom before confirming the estimate takes ~30 seconds and significantly improves system accuracy over time.',
   } : nudge.type === 'decrease' ? {
-    headline: `Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.`,
-    tip: `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`,
+    headline: 'Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.',
+    tip: decreaseTip,
   } : {
-    headline: `Significant count increases on high-confidence Citrus items in this store have been associated with an estimated $180 in lost sales last month.`,
+    headline: 'Significant count increases on high-confidence Citrus items in this store have been associated with an estimated $180 in lost sales last month.',
     tip: "Before adding items above the estimate, confirm the count includes only stock not yet scanned in today's incoming. Overcounting high-confidence items can delay future reorders.",
   }
 
@@ -296,6 +321,108 @@ function FeedbackSheet({ onClose }) {
   )
 }
 
+/* ── Inventory complete summary ── */
+function CompleteSummary({ itemStates, onDone }) {
+  const floorTotal = ITEMS.reduce((s, i) => s + itemStates[i.id].floor.count, 0)
+  const backTotal  = ITEMS.reduce((s, i) => s + itemStates[i.id].back.count,  0)
+
+  const UnitBadge = () => (
+    <span style={{
+      fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)',
+      background: '#F3F4F6', borderRadius: 4, padding: '1px 5px', marginLeft: 4,
+    }}>ea</span>
+  )
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
+      <StatusBar time="9:41" />
+
+      {/* Nav */}
+      <div style={{ display: 'flex', alignItems: 'center', padding: '4px 12px 10px', background: 'white', borderBottom: '1px solid var(--border)' }}>
+        <div style={{ width: 36 }} />
+        <span style={{ flex: 1, textAlign: 'center', fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
+          Inventory list
+        </span>
+        <button style={{ padding: 6 }}><HelpIcon /></button>
+        <button style={{ padding: 6 }}><SearchIcon /></button>
+      </div>
+
+      {/* Content */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '32px 20px 100px', background: 'white' }}>
+
+        {/* Illustration + title */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: 24 }}>
+          <ClipboardDoneIcon />
+          <div style={{ fontSize: 20, fontWeight: 800, color: 'var(--text-primary)', marginTop: 14, letterSpacing: '-0.4px' }}>
+            Inventory complete
+          </div>
+        </div>
+
+        {/* Stats card */}
+        <div style={{
+          background: 'white', borderRadius: 14,
+          border: '1.5px solid var(--border)',
+          display: 'flex', marginBottom: 28,
+          boxShadow: 'var(--shadow-sm)',
+        }}>
+          <div style={{ flex: 1, padding: '14px 16px', borderRight: '1px solid var(--border)' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Floor items</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', display: 'flex', alignItems: 'baseline' }}>
+              {floorTotal}<UnitBadge />
+            </div>
+          </div>
+          <div style={{ flex: 1, padding: '14px 16px' }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontWeight: 500, marginBottom: 5 }}>Back items</div>
+            <div style={{ fontSize: 24, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.5px', display: 'flex', alignItems: 'baseline' }}>
+              {backTotal}<UnitBadge />
+            </div>
+          </div>
+        </div>
+
+        {/* Completed items */}
+        <div style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 16, letterSpacing: '-0.3px' }}>
+          Completed items
+        </div>
+
+        {/* Back row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 16 }}>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Back</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{
+              background: '#F3F4F6', borderRadius: 20, padding: '3px 12px',
+              fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)',
+            }}>{ITEMS.length}</span>
+            <span style={{ color: 'var(--text-tertiary)' }}><ChevronDownIcon /></span>
+          </div>
+        </div>
+        <div style={{ height: 1, background: 'var(--border)', marginBottom: 16 }} />
+
+        {/* Floor row */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)' }}>Floor</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <span style={{
+              background: '#F3F4F6', borderRadius: 20, padding: '3px 12px',
+              fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)',
+            }}>{ITEMS.length}</span>
+            <span style={{ color: 'var(--text-tertiary)' }}><ChevronDownIcon /></span>
+          </div>
+        </div>
+      </div>
+
+      {/* Done button — bottom right */}
+      <div style={{ position: 'absolute', bottom: 24, right: 20 }}>
+        <button onClick={onDone} style={{
+          padding: '14px 32px', borderRadius: 28,
+          background: 'var(--green-primary)', color: 'white',
+          fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
+          boxShadow: '0 4px 12px rgba(45,92,52,0.35)',
+        }}>Done</button>
+      </div>
+    </div>
+  )
+}
+
 /* ── Item card ── */
 function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason }) {
   const conf = CONFIDENCE[item.confidence]
@@ -340,15 +467,12 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
     }}>
       <div style={{ padding: '12px 14px 0' }}>
 
-        {/* Name */}
         <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 2, lineHeight: 1.3 }}>
           {item.name}
         </div>
-
-        {/* SKU */}
         <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{item.sku}</div>
 
-        {/* Location — shows only the active view's line, no label prefix */}
+        {/* Location — shows only the active view's line */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
           {locationView === 'floor' ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
@@ -363,7 +487,7 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           )}
         </div>
 
-        {/* System estimate + confidence badge */}
+        {/* System estimate + confidence */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
           <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>System estimate</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -399,7 +523,6 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
       {/* Count controls */}
       <div style={{ padding: '10px 14px 12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: significantDiff ? 10 : 0 }}>
-
           <button onClick={() => onCount(Math.max(0, state.count - 1))} style={{
             width: 40, height: 40, borderRadius: '50%',
             border: '1.5px solid var(--border)', background: 'white',
@@ -443,7 +566,6 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           }}>Save</button>
         </div>
 
-        {/* Reason picker — significant adjustments only */}
         {significantDiff && (
           <div style={{ background: '#FAFAFA', borderRadius: 10, padding: '9px 10px', border: '1px solid var(--border)' }}>
             <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 7 }}>
@@ -473,24 +595,27 @@ export default function InventoryCount({ onBack, onDone }) {
   const [categoryOpen, setCategoryOpen] = useState(true)
   const [itemStates, setItemStates] = useState(
     Object.fromEntries(ITEMS.map(item => [item.id, {
-      count: item.systemEstimate,
-      saved: false,
-      reason: null,
+      floor: { count: item.systemEstimate, saved: false, reason: null },
+      back:  { count: item.systemEstimate, saved: false, reason: null },
     }]))
   )
-  const [nudge, setNudge]             = useState(null)
+  const [nudge, setNudge]               = useState(null)
   const [feedbackOpen, setFeedbackOpen] = useState(false)
+  const [showSummary, setShowSummary]   = useState(false)
 
-  const getState    = id => itemStates[id]
-  const updateState = (id, patch) => setItemStates(prev => ({ ...prev, [id]: { ...prev[id], ...patch } }))
+  const getViewState    = id => itemStates[id][locationView]
+  const updateViewState = (id, patch) => setItemStates(prev => ({
+    ...prev,
+    [id]: { ...prev[id], [locationView]: { ...prev[id][locationView], ...patch } },
+  }))
 
   const handleSave = id => {
-    const st   = getState(id)
+    const st   = getViewState(id)
     const item = ITEMS.find(i => i.id === id)
     const diff = Math.abs(st.count - item.systemEstimate)
     const isSignificant = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
 
-    updateState(id, { saved: true })
+    updateViewState(id, { saved: true })
 
     if ((item.confidence === 'medium' || item.confidence === 'low') && diff === 0) {
       setNudge({ type: 'seldom' })
@@ -498,13 +623,35 @@ export default function InventoryCount({ onBack, onDone }) {
       setNudge({
         type: st.count < item.systemEstimate ? 'decrease' : 'increase',
         backLoc: item.backLoc,
+        floorLoc: item.floorLoc,
+        locationView,
       })
     }
   }
 
-  const savedCount = ITEMS.filter(i => getState(i.id).saved).length
-  const allSaved   = savedCount === ITEMS.length
-  const progress   = savedCount / ITEMS.length
+  const switchView = view => { setLocationView(view); setNudge(null) }
+
+  const floorSavedCount = ITEMS.filter(i => itemStates[i.id].floor.saved).length
+  const backSavedCount  = ITEMS.filter(i => itemStates[i.id].back.saved).length
+  const floorAllSaved   = floorSavedCount === ITEMS.length
+  const backAllSaved    = backSavedCount  === ITEMS.length
+  const curSavedCount   = locationView === 'floor' ? floorSavedCount : backSavedCount
+  const curAllSaved     = locationView === 'floor' ? floorAllSaved   : backAllSaved
+  const progress        = curSavedCount / ITEMS.length
+
+  const handleCompleteCount = () => {
+    if (locationView === 'floor') {
+      if (backAllSaved) setShowSummary(true)
+      else switchView('back')
+    } else {
+      if (floorAllSaved) setShowSummary(true)
+      else switchView('floor')
+    }
+  }
+
+  if (showSummary) {
+    return <CompleteSummary itemStates={itemStates} onDone={onDone} />
+  }
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: 'var(--page-bg)', position: 'relative' }}>
@@ -518,17 +665,21 @@ export default function InventoryCount({ onBack, onDone }) {
 
         {['floor', 'back'].map(view => {
           const isActive = locationView === view
+          const isDone   = view === 'floor' ? floorAllSaved : backAllSaved
           return (
-            <button key={view} onClick={() => setLocationView(view)} style={{
+            <button key={view} onClick={() => switchView(view)} style={{
               display: 'flex', alignItems: 'center', gap: 6,
               padding: '9px 20px', borderRadius: 24, flexShrink: 0,
               background: isActive ? 'var(--green-primary)' : 'white',
-              border: `1.5px solid ${isActive ? 'var(--green-primary)' : 'var(--border)'}`,
-              color: isActive ? 'white' : 'var(--text-secondary)',
+              border: `1.5px solid ${isActive ? 'var(--green-primary)' : isDone ? 'var(--green-primary)' : 'var(--border)'}`,
+              color: isActive ? 'white' : isDone ? 'var(--green-primary)' : 'var(--text-secondary)',
               fontSize: 14, fontWeight: 600,
             }}>
               {view === 'floor' ? <FloorTabIcon active={isActive} /> : <BackTabIcon active={isActive} />}
               {view === 'floor' ? 'Floor' : 'Back'}
+              {isDone && !isActive && (
+                <CheckIcon size={12} color="var(--green-primary)" />
+              )}
             </button>
           )
         })}
@@ -548,7 +699,7 @@ export default function InventoryCount({ onBack, onDone }) {
       </div>
 
       {/* Scrollable body */}
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', paddingBottom: allSaved ? 90 : 24 }}>
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', paddingBottom: curAllSaved ? 90 : 24 }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
@@ -560,27 +711,25 @@ export default function InventoryCount({ onBack, onDone }) {
             border: '1.5px solid var(--border)', background: 'white',
             fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)',
           }}>
-            To Do {ITEMS.length - savedCount}
+            To Do {ITEMS.length - curSavedCount}
             <ChevronDownIcon />
           </button>
         </div>
 
         <div>
-          {/* Category header */}
           <button
             onClick={() => setCategoryOpen(o => !o)}
             style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6, padding: 0, background: 'transparent' }}
           >
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
               <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>Citrus Fruits</span>
-              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{savedCount}/{ITEMS.length} scanned</span>
+              <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{curSavedCount}/{ITEMS.length} scanned</span>
             </div>
             <span style={{ color: 'var(--text-tertiary)', display: 'flex' }}>
               {categoryOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
             </span>
           </button>
 
-          {/* Category progress bar */}
           <div style={{ height: 3, background: 'var(--border)', borderRadius: 4, marginBottom: 10, overflow: 'hidden' }}>
             <div style={{
               height: '100%', background: 'var(--green-primary)',
@@ -589,27 +738,24 @@ export default function InventoryCount({ onBack, onDone }) {
             }} />
           </div>
 
-          {/* Pattern nudge — appears after a save triggers a pattern */}
           {nudge && categoryOpen && (
-            <NudgeCard key={nudge.type} nudge={nudge} onDismiss={() => setNudge(null)} />
+            <NudgeCard key={`${nudge.type}-${nudge.locationView}`} nudge={nudge} onDismiss={() => setNudge(null)} />
           )}
 
-          {/* Item cards */}
           {categoryOpen && ITEMS.map(item => (
             <ItemCard
               key={item.id}
               item={item}
-              state={getState(item.id)}
+              state={getViewState(item.id)}
               locationView={locationView}
               onSave={() => handleSave(item.id)}
-              onEdit={() => updateState(item.id, { saved: false })}
-              onCount={count => updateState(item.id, { count, saved: false })}
-              onReason={reason => updateState(item.id, { reason })}
+              onEdit={() => updateViewState(item.id, { saved: false })}
+              onCount={count => updateViewState(item.id, { count, saved: false })}
+              onReason={reason => updateViewState(item.id, { reason })}
             />
           ))}
         </div>
 
-        {/* Feedback link at bottom of list */}
         <div style={{ textAlign: 'center', paddingTop: 4 }}>
           <button
             onClick={() => setFeedbackOpen(true)}
@@ -622,27 +768,29 @@ export default function InventoryCount({ onBack, onDone }) {
       </div>
 
       {/* Complete count bar */}
-      {allSaved && (
+      {curAllSaved && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0,
           background: 'white', borderTop: '1px solid var(--border)',
           padding: '11px 16px 16px',
           boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
         }}>
-          <button onClick={onDone} style={{
+          <button onClick={handleCompleteCount} style={{
             width: '100%', padding: '14px', borderRadius: 12,
             background: 'var(--green-primary)', color: 'white',
             fontSize: 15, fontWeight: 700,
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
           }}>
             <CheckIcon size={16} color="white" />
-            Complete Count ({ITEMS.length}/{ITEMS.length} items)
+            {locationView === 'floor'
+              ? (backAllSaved ? 'Complete Count' : 'Continue to Back →')
+              : (floorAllSaved ? 'Complete Count' : 'Continue to Floor →')}
           </button>
         </div>
       )}
 
       {/* Barcode scanner FAB */}
-      {!allSaved && (
+      {!curAllSaved && (
         <div style={{
           position: 'absolute', bottom: 20, right: 16,
           width: 52, height: 52, borderRadius: '50%',
@@ -654,7 +802,6 @@ export default function InventoryCount({ onBack, onDone }) {
         </div>
       )}
 
-      {/* Feedback sheet overlay */}
       {feedbackOpen && <FeedbackSheet onClose={() => setFeedbackOpen(false)} />}
     </div>
   )
