@@ -18,13 +18,11 @@ for (const f of readdirSync(assets).filter(f => f.endsWith('.css'))) {
   )
 }
 
-// Inline JS — use function replacer so $& / $' in minified code aren't expanded
+// Inline JS — remove from <head>, inject before </body> so #root exists when the script runs
 for (const f of readdirSync(assets).filter(f => f.endsWith('.js'))) {
   const js = readFileSync(join(assets, f), 'utf8')
-  html = html.replace(
-    `<script type="module" crossorigin src="./assets/${f}"></script>`,
-    () => `<script>${js}</script>`
-  )
+  html = html.replace(`<script type="module" crossorigin src="./assets/${f}"></script>`, '')
+  html = html.replace('</body>', () => `<script>${js}</script>\n</body>`)
 }
 
 const out = join(dist, 'afresh-prototype.html')
