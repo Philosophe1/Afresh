@@ -157,6 +157,35 @@ const Divider = ({ my = 10 }) => (
   <div style={{ height: 1, background: 'var(--border)', margin: `${my}px 0` }} />
 )
 
+/* ── compact row (non-review items in All items list) ── */
+function CompactRow({ item, state }) {
+  const isOverridden = state.status === 'overridden'
+  const qty = isOverridden ? state.overrideQty : item.recommended
+  return (
+    <div style={{
+      background: 'var(--card-bg)',
+      borderRadius: 14,
+      marginBottom: 10,
+      boxShadow: 'var(--shadow-sm)',
+      border: '1.5px solid var(--border)',
+      padding: '13px 14px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    }}>
+      <span style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
+        {item.name}
+      </span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <span style={{ fontSize: 15, fontWeight: 700, color: isOverridden ? 'var(--amber)' : 'var(--text-primary)' }}>
+          {qty}
+        </span>
+        <UnitBadge label={item.unit} amber={isOverridden} />
+      </div>
+    </div>
+  )
+}
+
 /* ── item card ── */
 function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, onSubmitOverride }) {
   const isConfirmed  = state.status === 'confirmed'
@@ -487,7 +516,9 @@ export default function OrderReview({ onBack, onSubmit }) {
             </button>
           </div>
           {allItemsToShow.map(item => (
-            <ItemCard key={item.id} {...cardProps(item.id)} />
+            item.needsReview
+              ? <ItemCard key={item.id} {...cardProps(item.id)} />
+              : <CompactRow key={item.id} item={item} state={getState(item.id)} />
           ))}
         </div>
       </div>
@@ -496,17 +527,17 @@ export default function OrderReview({ onBack, onSubmit }) {
       <div style={{
         position: 'absolute', bottom: 0, left: 0, right: 0,
         background: 'white', borderTop: '1px solid var(--border)',
-        padding: '11px 14px 16px',
-        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '11px 16px 16px',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         boxShadow: '0 -4px 16px rgba(0,0,0,0.06)',
       }}>
-        <div style={{ flexShrink: 0 }}>
+        <div>
           <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total</div>
           <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             {totalCS} CS
           </div>
         </div>
-        <div style={{ flexShrink: 0 }}>
+        <div>
           <div style={{ fontSize: 10, color: 'var(--text-tertiary)', fontWeight: 500, marginBottom: 2 }}>Total cost</div>
           <div style={{ fontSize: 16, fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
             ${totalCost.toFixed(2)}
@@ -516,14 +547,14 @@ export default function OrderReview({ onBack, onSubmit }) {
           onClick={allActioned ? onSubmit : undefined}
           disabled={!allActioned}
           style={{
-            flex: 1, padding: '13px', borderRadius: 28,
+            padding: '13px 28px', borderRadius: 28,
             background: allActioned ? 'var(--green-primary)' : '#C8D9C9',
             color: 'white', fontSize: 15, fontWeight: 700, letterSpacing: '-0.2px',
             transition: 'background 0.25s ease',
             cursor: allActioned ? 'pointer' : 'not-allowed',
           }}
         >
-          Submit Order
+          Submit
         </button>
       </div>
     </div>
