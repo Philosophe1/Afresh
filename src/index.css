@@ -55,6 +55,16 @@ input {
   outline: none;
 }
 
+/* Hide native number-input spin buttons (redundant with custom +/- controls) */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
 /* Scrollbar for scrollable content areas */
 ::-webkit-scrollbar {
   width: 8px;

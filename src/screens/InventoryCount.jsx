@@ -83,9 +83,9 @@ const BarcodeIcon = () => (
 
 /* ── Data ── */
 const CONFIDENCE = {
-  high:   { label: 'High',   color: 'var(--green-primary)', bg: 'var(--green-light)' },
-  medium: { label: 'Medium', color: 'var(--amber)',         bg: '#FEF3C7' },
-  low:    { label: 'Low',    color: 'var(--red)',           bg: '#FFEBEE' },
+  high:   { label: 'High confidence',   color: 'var(--green-primary)', bg: 'var(--green-light)' },
+  medium: { label: 'Medium confidence', color: 'var(--amber)',         bg: '#FEF3C7' },
+  low:    { label: 'Low confidence',    color: 'var(--red)',           bg: '#FFEBEE' },
 }
 
 const REASONS = [
@@ -135,7 +135,8 @@ const ITEMS = [
 /* ── Item card ── */
 function ItemCard({ item, state, onSave, onCount, onReason }) {
   const conf = CONFIDENCE[item.confidence]
-  const significantDiff = Math.abs(state.count - item.systemEstimate) >= SIGNIFICANT_DIFF
+  const diff = Math.abs(state.count - item.systemEstimate)
+  const significantDiff = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
 
   return (
     <div style={{
