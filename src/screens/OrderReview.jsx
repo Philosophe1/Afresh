@@ -108,7 +108,7 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 18.50,
     confidence: 'medium',
-    rationale: 'Based on expected sales of 18 CS in next 5 days',
+    rationale: 'Expected sales: 18 CS over next 5 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 6 CS' },
       { icon: 'trend',    text: 'Recent sales trend: +12% vs last week' },
@@ -132,7 +132,7 @@ const ITEMS = [
     unit: 'CS',
     unitCost: 22.00,
     confidence: 'high',
-    rationale: 'Based on expected sales of 7 CS in next 4 days',
+    rationale: 'Expected sales: 7 CS over next 4 days',
     keyDrivers: [
       { icon: 'box',      text: 'Current inventory: 1 CS' },
       { icon: 'trend',    text: 'Recent sales trend: steady vs last week' },
@@ -265,7 +265,7 @@ function ItemCard({ item, state, onConfirm, onToggleOverride, onOverrideInput, o
 
           {/* Rationale */}
           <div style={{ background: '#F0F9F1', borderRadius: 9, padding: '8px 11px', marginBottom: 11, borderLeft: '3px solid var(--green-primary)' }}>
-            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', lineHeight: 1.5 }}>
+            <div style={{ fontSize: 12, color: 'var(--text-secondary)', fontStyle: 'italic', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {item.rationale}
             </div>
           </div>
