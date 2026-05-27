@@ -755,19 +755,6 @@ export default function LowsScreen({ onBack, onDone }) {
         </div>
       )}
 
-      {/* Barcode FAB */}
-      {locationView === 'floor' && hasItems && nextScanItem && !scanSheet && !locationSheet && (
-        <div style={{
-          position: 'absolute', bottom: 20, right: 16,
-          width: 52, height: 52, borderRadius: '50%',
-          background: 'white', boxShadow: '0 3px 12px rgba(0,0,0,0.15)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          border: '1.5px solid var(--border)', pointerEvents: 'none',
-        }}>
-          <BarcodeIcon />
-        </div>
-      )}
-
       {scanSheet && nextScanItem && (
         <ScanSheet scannedItem={nextScanItem} onConfirm={handleScanConfirm} onClose={() => setScanSheet(false)} />
       )}
