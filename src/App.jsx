@@ -4,11 +4,13 @@ import PreSessionSummary from './screens/PreSessionSummary'
 import OrderReview from './screens/OrderReview'
 import InventoryCount from './screens/InventoryCount'
 import InventoryCountSteps from './screens/InventoryCountSteps'
+import LowsScreen from './screens/LowsScreen'
 
 export default function App() {
   const [screen, setScreen] = useState('tasks')
   const [countDone, setCountDone] = useState(false)
   const [countStats, setCountStats] = useState(null)
+  const [lowsDone, setLowsDone] = useState(false)
   const [orderSubmitted, setOrderSubmitted] = useState(false)
   const [submitTime, setSubmitTime] = useState('')
 
@@ -47,7 +49,16 @@ export default function App() {
       {screen === 'countSteps' && (
         <InventoryCountSteps
           onBack={() => setScreen('preSession')}
+          onLows={() => setScreen('lows')}
           onTargetedList={() => setScreen('inventoryCount')}
+          lowsDone={lowsDone}
+          targetedDone={countDone}
+        />
+      )}
+      {screen === 'lows' && (
+        <LowsScreen
+          onBack={() => setScreen('countSteps')}
+          onDone={() => { setLowsDone(true); setScreen('countSteps') }}
         />
       )}
       {screen === 'inventoryCount' && (

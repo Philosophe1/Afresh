@@ -14,7 +14,15 @@ const ChevronRightIcon = () => (
   </svg>
 )
 
-export default function InventoryCountSteps({ onBack, onTargetedList }) {
+const CheckCircleIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+    stroke="var(--green-primary)" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="9 12 11 14 15 10" />
+  </svg>
+)
+
+export default function InventoryCountSteps({ onBack, onLows, onTargetedList, lowsDone, targetedDone }) {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column',
@@ -43,7 +51,7 @@ export default function InventoryCountSteps({ onBack, onTargetedList }) {
           background: 'var(--card-bg)', borderRadius: 16, marginBottom: 12,
           boxShadow: 'var(--shadow-sm)', overflow: 'hidden',
         }}>
-          <button style={{
+          <button onClick={onLows} style={{
             width: '100%', display: 'flex', alignItems: 'center',
             justifyContent: 'space-between', padding: '18px 16px',
             background: 'transparent',
@@ -51,7 +59,7 @@ export default function InventoryCountSteps({ onBack, onTargetedList }) {
             <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
               1.&nbsp;&nbsp;Lows
             </span>
-            <ChevronRightIcon />
+            {lowsDone ? <CheckCircleIcon /> : <ChevronRightIcon />}
           </button>
         </div>
 
@@ -68,7 +76,7 @@ export default function InventoryCountSteps({ onBack, onTargetedList }) {
             <span style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.2px' }}>
               2.&nbsp;&nbsp;Targeted list of items
             </span>
-            <ChevronRightIcon />
+            {targetedDone ? <CheckCircleIcon /> : <ChevronRightIcon />}
           </button>
         </div>
       </div>
