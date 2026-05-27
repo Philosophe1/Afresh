@@ -34,20 +34,20 @@ export default function App() {
           countStats={countStats}
           orderSubmitted={orderSubmitted}
           submitTime={submitTime}
-          onStartCount={() => setScreen('countSteps')}
+          onStartCount={() => setScreen('preSession')}
           onViewOrder={() => setScreen('orderReview')}
-        />
-      )}
-      {screen === 'countSteps' && (
-        <InventoryCountSteps
-          onBack={() => setScreen('tasks')}
-          onTargetedList={() => setScreen('inventoryCount')}
         />
       )}
       {screen === 'preSession' && (
         <PreSessionSummary
           onBack={() => setScreen('tasks')}
-          onStartCount={() => setScreen('inventoryCount')}
+          onStartCount={() => setScreen('countSteps')}
+        />
+      )}
+      {screen === 'countSteps' && (
+        <InventoryCountSteps
+          onBack={() => setScreen('preSession')}
+          onTargetedList={() => setScreen('inventoryCount')}
         />
       )}
       {screen === 'inventoryCount' && (
