@@ -38,7 +38,7 @@ const STEPS = [
   {
     id: 'lows',
     label: 'Lows',
-    description: 'Scan and count near-zero items on the floor and in the back',
+    description: 'Scan and count zero/near-zero items on the floor and in the back',
     doneText: 'Floor and back lows confirmed',
     buttonLabel: 'Start',
     Icon: TrendingDownIcon,

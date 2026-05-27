@@ -505,10 +505,17 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
         {/* Location — shows only the active view's lines */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
           {locationView === 'floor' ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <MapPinIcon />
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.floorLoc}</span>
-            </div>
+            <>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.4px', marginBottom: 5 }}>
+                ALL DISPLAY LOCATIONS
+              </div>
+              {item.floorLoc.split(', ').map((loc, i, arr) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: i < arr.length - 1 ? 3 : 0 }}>
+                  <MapPinIcon />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{loc}</span>
+                </div>
+              ))}
+            </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <BoxIcon />

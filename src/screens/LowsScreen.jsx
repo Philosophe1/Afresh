@@ -418,15 +418,17 @@ function LowsItemCard({ item, state, locationView, onSave, onEdit, onCount, onRe
         {/* Location */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
           {locationView === 'floor' ? (
-            item.floorLocs.map((loc, i) => (
-              <div key={i} style={{
-                display: 'flex', alignItems: 'center', gap: 5,
-                marginBottom: i < item.floorLocs.length - 1 ? 4 : 0,
-              }}>
-                <MapPinIcon />
-                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{loc}</span>
+            <>
+              <div style={{ fontSize: 10, fontWeight: 700, color: 'var(--text-tertiary)', letterSpacing: '0.4px', marginBottom: 5 }}>
+                ALL DISPLAY LOCATIONS
               </div>
-            ))
+              {item.floorLocs.map((loc, i, arr) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: i < arr.length - 1 ? 3 : 0 }}>
+                  <MapPinIcon />
+                  <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{loc}</span>
+                </div>
+              ))}
+            </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <BoxIcon />
