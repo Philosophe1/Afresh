@@ -516,29 +516,16 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           )}
         </div>
 
-        {/* System estimate + confidence */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 9 }}>
-          <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>System estimate</span>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-            <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.3px' }}>
-              {item.systemEstimate} {unit}
-            </span>
-            <span style={{ fontSize: 11, fontWeight: 700, color: conf.color, background: conf.bg, borderRadius: 20, padding: '2px 8px' }}>
-              {conf.label}
-            </span>
-          </div>
-        </div>
-
         {/* Incoming / Total / Display (floor only) — Back shows Total only */}
         <div style={{ display: 'flex', borderTop: '1px solid var(--border)', paddingTop: 9, paddingBottom: 9 }}>
           {(locationView === 'floor'
             ? [
                 { label: 'Incoming', value: `${item.incoming} ${unit}` },
                 { label: 'Total',    value: `${item.systemEstimate} ${unit}` },
-                { label: 'Display',  value: `${item.display} ${unit}` },
+                { label: 'Display',  value: `${item.display} ${unit}`, sysEst: true },
               ]
             : [
-                { label: 'Total', value: `${item.systemEstimate} ${unit}` },
+                { label: 'Total', value: `${item.systemEstimate} ${unit}`, sysEst: true },
               ]
           ).map((col, i, arr) => (
             <div key={i} style={{
@@ -547,7 +534,14 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
               paddingRight: i < arr.length - 1 ? 10 : 0,
               paddingLeft: i > 0 ? 10 : 0,
             }}>
-              <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: 2 }}>{col.label}</div>
+              <div style={{ marginBottom: 3 }}>
+                <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: col.sysEst ? 3 : 0 }}>{col.label}</div>
+                {col.sysEst && (
+                  <span style={{ fontSize: 10, fontWeight: 700, color: conf.color, background: conf.bg, borderRadius: 20, padding: '1px 6px' }}>
+                    {item.confidence.charAt(0).toUpperCase() + item.confidence.slice(1)} · est
+                  </span>
+                )}
+              </div>
               <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>{col.value}</div>
             </div>
           ))}
