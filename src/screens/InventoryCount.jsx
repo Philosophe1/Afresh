@@ -537,9 +537,9 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
               <div style={{ marginBottom: 3 }}>
                 <div style={{ fontSize: 11, color: 'var(--text-tertiary)', marginBottom: col.sysEst ? 3 : 0 }}>{col.label}</div>
                 {col.sysEst && (
-                  <span style={{ fontSize: 10, fontWeight: 700, color: conf.color, background: conf.bg, borderRadius: 20, padding: '1px 6px' }}>
-                    {conf.label} · est
-                  </span>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: conf.color, lineHeight: 1.3 }}>
+                    {conf.label} est.
+                  </div>
                 )}
               </div>
               <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-primary)' }}>{col.value}</div>
