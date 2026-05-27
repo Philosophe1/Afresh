@@ -34,10 +34,10 @@ body {
 }
 
 #root {
-  /* TC21/TC26: 5" diagonal, 9:16 → 2.451 × 4.358 physical inches.
-     At CSS 96 DPI: 235 × 418 px. Scale from 360×640 layout: 235/360 ≈ 0.654. */
   width: 360px;
   height: 640px;
+  /* JS in <head> computes and applies transform:scale() for the actual display.
+     0.654 is the 96-DPI fallback (≈5" on a standard monitor). */
   transform: scale(0.654);
   flex-shrink: 0;
 }

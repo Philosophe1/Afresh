@@ -4,6 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Afresh Scanner Prototype</title>
+    <script>
+      // TC21/TC26: 5" diagonal, 9:16 → width = 5×9/√(9²+16²) ≈ 2.4513"
+      // CSS assumes 96 DPI, but actual monitor DPI varies. We detect the
+      // physical screen size from common display configs and compute the
+      // correct scale so the app appears at exactly 5" diagonal.
+      function scaleToDevice() {
+        var el = document.getElementById('root');
+        if (!el) return;
+        var dpr = window.devicePixelRatio || 1;
+        var sw  = window.screen.width;   // CSS px (landscape: wider dim)
+        var sh  = window.screen.height;
+        // Physical pixel dims
+        var pw = Math.round(sw * dpr);
+        var ph = Math.round(sh * dpr);
+        var pLong = Math.max(pw, ph);
+
+        // Map physical pixel width → known physical diagonal (inches).
+        // Covers common Mac built-in and external displays.
+        var diagIn;
+        if      (pLong >= 3840) diagIn = 27;   // 4K 27" (or 32", accepting ~10% error)
+        else if (pLong >= 3456) diagIn = 14.2; // 14" MacBook Pro M1/M3
+        else if (pLong >= 3024) diagIn = 14.2; // 14" MacBook Pro (alternate res)
+        else if (pLong >= 2880) diagIn = 15.4; // 15" MacBook Pro (2012-2019)
+        else if (pLong >= 2560) diagIn = (dpr >= 2 ? 13.3 : 27); // 13" MBP Retina vs 27" QHD
+        else if (pLong >= 1920) diagIn = (dpr >= 2 ? 24 : 24);   // 24" (Retina or not)
+        else                    diagIn = 13.3; // fallback
+
+        // Physical screen width in inches (from diagonal + pixel aspect ratio)
+        var pDiag = Math.sqrt(pw * pw + ph * ph);
+        var physW = diagIn * (pLong / pDiag);
+
+        // CSS pixels per physical inch for this display
+        var cssDPI = Math.max(sw, sh) / physW;
+
+        // Scale 360px layout so the visual width = 2.4513 physical inches
+        var scale = (2.4513 * cssDPI) / 360;
+        el.style.transform = 'scale(' + scale.toFixed(5) + ')';
+      }
+      document.addEventListener('DOMContentLoaded', scaleToDevice);
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -452,7 +452,7 @@ function CompleteSummary({ itemStates, onDone }) {
 }
 
 /* ── Item card ── */
-function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason }) {
+function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason, nudged }) {
   const conf = CONFIDENCE[item.confidence]
   const diff = Math.abs(state.count - item.systemEstimate)
   const significantDiff = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
@@ -463,7 +463,8 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
     return (
       <div style={{
         background: 'white', borderRadius: 14, marginBottom: 10,
-        boxShadow: 'var(--shadow-sm)', border: '1.5px solid var(--green-primary)',
+        boxShadow: 'var(--shadow-sm)',
+        border: `1.5px solid ${nudged ? '#FDE68A' : 'var(--green-primary)'}`,
         padding: '12px 14px',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       }}>
@@ -657,10 +658,11 @@ export default function InventoryCount({ onBack, onDone }) {
     updateViewState(id, { saved: true })
 
     if ((item.confidence === 'medium' || item.confidence === 'low') && diff === 0) {
-      setNudge({ type: 'seldom' })
+      setNudge({ type: 'seldom', itemId: id })
     } else if (item.confidence === 'high' && isSignificant) {
       setNudge({
         type: st.count < item.systemEstimate ? 'decrease' : 'increase',
+        itemId: id,
         backLoc: item.backLoc,
         floorLoc: item.floorLoc,
         locationView,
@@ -791,6 +793,7 @@ export default function InventoryCount({ onBack, onDone }) {
               onEdit={() => updateViewState(item.id, { saved: false })}
               onCount={count => updateViewState(item.id, { count, saved: false })}
               onReason={reason => updateViewState(item.id, { reason })}
+              nudged={nudge?.itemId === item.id}
             />
           ))}
         </div>
