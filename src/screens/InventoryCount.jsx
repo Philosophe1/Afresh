@@ -54,6 +54,15 @@ const BoxIcon = () => (
     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
   </svg>
 )
+const TruckIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+    stroke="var(--text-tertiary)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="1" y="3" width="15" height="13" rx="1"/>
+    <path d="M16 8h4l3 3v5h-7V8z"/>
+    <circle cx="5.5" cy="18.5" r="2.5"/>
+    <circle cx="18.5" cy="18.5" r="2.5"/>
+  </svg>
+)
 const FloorTabIcon = ({ active }) => (
   <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
     stroke={active ? 'white' : 'var(--text-secondary)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -151,6 +160,7 @@ const ITEMS = [
     incoming: 0, total: 4, display: 4,
     systemEstimate: 4,
     confidence: 'medium',
+    incomingLoc: 'RECV-PRD-01',
     floorLoc: 'Citrus Table, Aisle 10 (Liquor/Beverage)',
     backLoc: 'PR-CLR-A03-S2',
   },
@@ -163,6 +173,7 @@ const ITEMS = [
     incoming: 2, total: 6, display: 6,
     systemEstimate: 6,
     confidence: 'high',
+    incomingLoc: 'RECV-PRD-01',
     floorLoc: 'Citrus Table',
     backLoc: 'PR-CTR-A03-S1',
   },
@@ -175,6 +186,7 @@ const ITEMS = [
     incoming: 0, total: 3, display: 3,
     systemEstimate: 3,
     confidence: 'low',
+    incomingLoc: 'RECV-PRD-01',
     floorLoc: 'Citrus Table, Aisle 10 (Liquor/Beverage)',
     backLoc: 'PR-LMN-A03-S3',
   },
@@ -190,7 +202,7 @@ function NudgeCard({ nudge, onDismiss }) {
 
   const content = nudge.type === 'seldom' ? {
     headline: 'Associates achieving strong results typically fully verify stock on low- and medium-confidence counts.',
-    tip: 'Physically checking both the floor display and backroom before confirming the estimate takes ~30 seconds and significantly improves system accuracy over time.',
+    tip: 'Physically checking the floor display, receiving area, and backroom before confirming the estimate takes ~2 min and significantly improves system accuracy over time.',
   } : nudge.type === 'decrease' ? {
     headline: 'Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.',
     tip: decreaseTip,
@@ -488,13 +500,19 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
         </div>
         <div style={{ fontSize: 12, color: 'var(--text-tertiary)', marginBottom: 8 }}>{item.sku}</div>
 
-        {/* Location — shows only the active view's line */}
+        {/* Location — shows only the active view's lines */}
         <div style={{ background: '#F6F7F8', borderRadius: 8, padding: '6px 9px', marginBottom: 9 }}>
           {locationView === 'floor' ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <MapPinIcon />
-              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.floorLoc}</span>
-            </div>
+            <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginBottom: 4 }}>
+                <TruckIcon />
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.incomingLoc}</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                <MapPinIcon />
+                <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{item.floorLoc}</span>
+              </div>
+            </>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
               <BoxIcon />
