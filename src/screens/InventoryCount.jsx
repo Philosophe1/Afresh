@@ -341,11 +341,11 @@ function CompleteSummary({ itemStates, onDone }) {
   const totalCount     = ITEMS.reduce((s, i) => s + itemStates[i.id].floor.count + itemStates[i.id].back.count, 0)
   const inventoryValue = ITEMS.reduce((s, i) => s + (itemStates[i.id].floor.count + itemStates[i.id].back.count) * i.unitPrice, 0)
   const adjustedDollars = ITEMS.reduce((s, i) =>
-    s + (Math.abs(itemStates[i.id].floor.count - i.systemEstimate) +
+    s + (Math.abs(itemStates[i.id].floor.count - i.display) +
          Math.abs(itemStates[i.id].back.count  - i.systemEstimate)) * i.unitPrice, 0)
   const discrepanciesCaught = ITEMS.reduce((s, i) => {
-    const fd = Math.abs(itemStates[i.id].floor.count - i.systemEstimate)
-    const bd = Math.abs(itemStates[i.id].back.count  - i.systemEstimate)
+    const fd  = Math.abs(itemStates[i.id].floor.count - i.display)
+    const bd  = Math.abs(itemStates[i.id].back.count  - i.systemEstimate)
     const sig = Math.max(SIGNIFICANT_DIFF, i.systemEstimate * 0.10)
     return s + (fd >= sig ? fd * i.unitPrice : 0) + (bd >= sig ? bd * i.unitPrice : 0)
   }, 0)
@@ -454,8 +454,9 @@ function CompleteSummary({ itemStates, onDone }) {
 /* ── Item card ── */
 function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason, nudged }) {
   const conf = CONFIDENCE[item.confidence]
-  const diff = Math.abs(state.count - item.systemEstimate)
-  const significantDiff = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
+  const locEstimate = locationView === 'floor' ? item.display : item.systemEstimate
+  const diff = Math.abs(state.count - locEstimate)
+  const significantDiff = diff >= Math.max(SIGNIFICANT_DIFF, locEstimate * 0.10)
   const unit = item.unit || 'CS'
 
   /* Collapsed saved state */
@@ -648,10 +649,11 @@ export default function InventoryCount({ onBack, onDone }) {
   }))
 
   const handleSave = id => {
-    const st   = getViewState(id)
-    const item = ITEMS.find(i => i.id === id)
-    const diff = Math.abs(st.count - item.systemEstimate)
-    const isSignificant = diff >= Math.max(SIGNIFICANT_DIFF, item.systemEstimate * 0.10)
+    const st          = getViewState(id)
+    const item        = ITEMS.find(i => i.id === id)
+    const locEstimate = locationView === 'floor' ? item.display : item.systemEstimate
+    const diff        = Math.abs(st.count - locEstimate)
+    const isSignificant = diff >= Math.max(SIGNIFICANT_DIFF, locEstimate * 0.10)
 
     updateViewState(id, { saved: true })
 
