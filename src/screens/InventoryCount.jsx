@@ -556,6 +556,16 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
 
       {/* Count controls */}
       <div style={{ padding: '10px 14px 12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 7 }}>
+          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Your count</span>
+          {locationView === 'floor' && (
+            <span style={{
+              fontSize: 11, fontWeight: 700,
+              color: 'var(--green-primary)', background: 'var(--green-light)',
+              borderRadius: 20, padding: '2px 8px',
+            }}>Display count</span>
+          )}
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: significantDiff ? 10 : 0 }}>
           <button onClick={() => onCount(Math.max(0, state.count - 1))} style={{
             width: 40, height: 40, borderRadius: '50%',
@@ -629,7 +639,7 @@ export default function InventoryCount({ onBack, onDone }) {
   const [categoryOpen, setCategoryOpen] = useState(true)
   const [itemStates, setItemStates] = useState(
     Object.fromEntries(ITEMS.map(item => [item.id, {
-      floor: { count: item.systemEstimate, saved: false, reason: null },
+      floor: { count: item.display, saved: false, reason: null },
       back:  { count: item.systemEstimate, saved: false, reason: null },
     }]))
   )
