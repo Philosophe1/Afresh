@@ -3,6 +3,7 @@ import TodaysTasks from './screens/TodaysTasks'
 import PreSessionSummary from './screens/PreSessionSummary'
 import OrderReview from './screens/OrderReview'
 import InventoryCount from './screens/InventoryCount'
+import InventoryCountSteps from './screens/InventoryCountSteps'
 
 export default function App() {
   const [screen, setScreen] = useState('tasks')
@@ -33,8 +34,14 @@ export default function App() {
           countStats={countStats}
           orderSubmitted={orderSubmitted}
           submitTime={submitTime}
-          onStartCount={() => setScreen('preSession')}
+          onStartCount={() => setScreen('countSteps')}
           onViewOrder={() => setScreen('orderReview')}
+        />
+      )}
+      {screen === 'countSteps' && (
+        <InventoryCountSteps
+          onBack={() => setScreen('tasks')}
+          onTargetedList={() => setScreen('inventoryCount')}
         />
       )}
       {screen === 'preSession' && (
@@ -45,7 +52,7 @@ export default function App() {
       )}
       {screen === 'inventoryCount' && (
         <InventoryCount
-          onBack={() => setScreen('preSession')}
+          onBack={() => setScreen('countSteps')}
           onDone={stats => { setCountDone(true); setCountStats(stats); setScreen('tasks') }}
         />
       )}
