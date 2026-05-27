@@ -4,7 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Afresh Scanner Prototype</title>
-    <script type="module" crossorigin src="./assets/index-C3KEiFLh.js"></script>
+    <script>
+      function scaleApp() {
+        var el = document.getElementById('root');
+        if (!el) return;
+        var s = Math.min(window.innerWidth / 360, window.innerHeight / 640);
+        el.style.transform = 'scale(' + s + ')';
+      }
+      document.addEventListener('DOMContentLoaded', scaleApp);
+      window.addEventListener('resize', scaleApp);
+    </script>
+    <script type="module" crossorigin src="./assets/index-x9uuAHOh.js"></script>
   </head>
   <body>
     <div id="root"></div>

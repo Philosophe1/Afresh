@@ -34,11 +34,10 @@ body {
 }
 
 #root {
-  /* TC21/TC26 native: 360×640 CSS px (720×1280 physical at DPR 2).
-     Scale down proportionally when the viewport is smaller than that,
-     keeping the 9:16 aspect ratio. Never exceeds native resolution. */
-  width: min(360px, 56.25vh, 100vw);
-  height: min(640px, 100vh, calc(100vw * 16 / 9));
+  /* Fixed at TC21/TC26 CSS resolution; a script in <head> scales to fit the viewport */
+  width: 360px;
+  height: 640px;
+  flex-shrink: 0;
 }
 
 button {
