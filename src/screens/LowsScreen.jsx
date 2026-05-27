@@ -256,9 +256,7 @@ function FeedbackSheet({ onClose }) {
 }
 
 /* ── Scan sheet ── */
-function ScanSheet({ alreadyScanned, onScan, onClose }) {
-  const available = LOWS_CATALOG.filter(i => !alreadyScanned.includes(i.id))
-
+function ScanSheet({ scannedItem, onConfirm, onClose }) {
   return (
     <div onClick={e => e.target === e.currentTarget && onClose()} style={{
       position: 'absolute', inset: 0, zIndex: 200,
@@ -273,11 +271,11 @@ function ScanSheet({ alreadyScanned, onScan, onClose }) {
           <button onClick={onClose} style={{ padding: 4 }}><XIcon /></button>
         </div>
 
-        {/* Viewfinder */}
+        {/* Viewfinder — shows scanned barcode */}
         <div style={{
           background: '#111827', borderRadius: 12, height: 78,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          marginBottom: 14, position: 'relative', overflow: 'hidden',
+          marginBottom: 12, position: 'relative', overflow: 'hidden',
         }}>
           {[['top', 'left'], ['top', 'right'], ['bottom', 'left'], ['bottom', 'right']].map(([v, h]) => (
             <div key={`${v}${h}`} style={{
@@ -292,39 +290,45 @@ function ScanSheet({ alreadyScanned, onScan, onClose }) {
                 : v === 'bottom' && h === 'left' ? '0 0 0 3px' : '0 0 3px 0',
             }} />
           ))}
-          <span style={{ color: '#6B7280', fontSize: 12, fontWeight: 500 }}>
-            Point at barcode and press trigger
-          </span>
+          {/* Scan result line */}
+          <div style={{ position: 'absolute', left: 28, right: 28, height: 2, background: '#4ade80', opacity: 0.8 }} />
+          {/* SKU label */}
+          <div style={{
+            position: 'absolute', bottom: 8,
+            background: 'rgba(74,222,128,0.15)', borderRadius: 4, padding: '2px 8px',
+          }}>
+            <span style={{ color: '#4ade80', fontSize: 11, fontWeight: 700, letterSpacing: '1px' }}>
+              {scannedItem.sku}
+            </span>
+          </div>
         </div>
 
-        {available.length > 0 && (
-          <>
-            <div style={{ fontSize: 12, color: 'var(--text-tertiary)', fontWeight: 600, marginBottom: 8, letterSpacing: '0.3px' }}>
-              OR SELECT MANUALLY
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {available.map(item => (
-                <button key={item.id} onClick={() => onScan(item)} style={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '12px 14px', borderRadius: 12,
-                  border: '1.5px solid var(--border)', background: '#F9FAFB',
-                }}>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', marginBottom: 2 }}>{item.name}</div>
-                    <div style={{ fontSize: 11, color: 'var(--text-tertiary)' }}>{item.sku}</div>
-                  </div>
-                  <BarcodeIcon />
-                </button>
-              ))}
-            </div>
-          </>
-        )}
-
-        {available.length === 0 && (
-          <div style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: 13, padding: '10px 0' }}>
-            All available items have been scanned.
+        {/* Identified item */}
+        <div style={{
+          background: 'var(--green-light)', borderRadius: 12, padding: '12px 14px', marginBottom: 14,
+          border: '1.5px solid var(--green-primary)',
+          display: 'flex', alignItems: 'center', gap: 10,
+        }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: '50%',
+            background: 'var(--green-primary)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+          }}>
+            <CheckIcon size={16} color="white" />
           </div>
-        )}
+          <div>
+            <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--green-primary)', marginBottom: 2 }}>Item identified</div>
+            <div style={{ fontSize: 15, fontWeight: 700, color: 'var(--text-primary)' }}>{scannedItem.name}</div>
+          </div>
+        </div>
+
+        <button onClick={onConfirm} style={{
+          width: '100%', padding: '13px', borderRadius: 12,
+          background: 'var(--green-primary)', color: 'white',
+          fontSize: 14, fontWeight: 700,
+        }}>
+          Confirm scan
+        </button>
       </div>
     </div>
   )
@@ -519,11 +523,14 @@ function LowsItemCard({ item, state, locationView, onSave, onEdit, onCount, onRe
   )
 }
 
+const SCAN_SEQUENCE = ['strawberries', 'raspberries', 'blueberries']
+
 /* ── Main screen ── */
 export default function LowsScreen({ onBack, onDone }) {
   const [locationView, setLocationView] = useState('floor')
   const [floorSubmitted, setFloorSubmitted] = useState(false)
   const [scannedItemIds, setScannedItemIds] = useState([])
+  const [scanCount, setScanCount] = useState(0)
   const [itemStates, setItemStates] = useState({})
   const [scanSheet, setScanSheet] = useState(false)
   const [locationSheet, setLocationSheet] = useState(null)
@@ -532,6 +539,9 @@ export default function LowsScreen({ onBack, onDone }) {
 
   const scannedItems = LOWS_CATALOG.filter(i => scannedItemIds.includes(i.id))
   const hasItems = scannedItemIds.length > 0
+  const nextScanItem = scanCount < SCAN_SEQUENCE.length
+    ? LOWS_CATALOG.find(i => i.id === SCAN_SEQUENCE[scanCount])
+    : null
 
   const getViewState    = id => itemStates[id]?.[locationView]
   const updateViewState = (id, patch) => setItemStates(prev => ({
@@ -539,13 +549,14 @@ export default function LowsScreen({ onBack, onDone }) {
     [id]: { ...prev[id], [locationView]: { ...prev[id][locationView], ...patch } },
   }))
 
-  const handleScanSelect = item => {
+  const handleScanConfirm = () => {
     setScanSheet(false)
-    setLocationSheet({ item })
+    setLocationSheet({ item: nextScanItem })
   }
 
   const handleLocationSelect = loc => {
     const item = locationSheet.item
+    setScanCount(prev => prev + 1)
     setScannedItemIds(prev => [...prev, item.id])
     setItemStates(prev => ({
       ...prev,
@@ -653,8 +664,8 @@ export default function LowsScreen({ onBack, onDone }) {
           <NudgeCard key={`${nudge.type}-${nudge.locationView}`} nudge={nudge} onDismiss={() => setNudge(null)} />
         )}
 
-        {/* Scan button (floor only) */}
-        {locationView === 'floor' && (
+        {/* Scan button (floor only, up to 3 scans) */}
+        {locationView === 'floor' && nextScanItem && (
           <button onClick={() => setScanSheet(true)} style={{
             width: '100%', marginBottom: hasItems ? 14 : 24,
             border: '1.5px dashed var(--border)', borderRadius: 14,
@@ -743,7 +754,7 @@ export default function LowsScreen({ onBack, onDone }) {
       )}
 
       {/* Barcode FAB */}
-      {locationView === 'floor' && hasItems && !floorAllSaved && !scanSheet && !locationSheet && (
+      {locationView === 'floor' && hasItems && nextScanItem && !scanSheet && !locationSheet && (
         <div style={{
           position: 'absolute', bottom: 20, right: 16,
           width: 52, height: 52, borderRadius: '50%',
@@ -755,8 +766,8 @@ export default function LowsScreen({ onBack, onDone }) {
         </div>
       )}
 
-      {scanSheet && (
-        <ScanSheet alreadyScanned={scannedItemIds} onScan={handleScanSelect} onClose={() => setScanSheet(false)} />
+      {scanSheet && nextScanItem && (
+        <ScanSheet scannedItem={nextScanItem} onConfirm={handleScanConfirm} onClose={() => setScanSheet(false)} />
       )}
       {locationSheet && (
         <LocationSheet item={locationSheet.item} onSelect={handleLocationSelect} onClose={() => setLocationSheet(null)} />
