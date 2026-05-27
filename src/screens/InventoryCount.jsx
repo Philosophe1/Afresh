@@ -170,7 +170,7 @@ const ITEMS = [
     sku: '23985012',
     unit: 'ea',
     unitPrice: 0.89,
-    incoming: 2, total: 6, display: 6,
+    incoming: 2, total: 6, display: 4,
     systemEstimate: 6,
     confidence: 'high',
     incomingLoc: 'RECV-PRD-01',
