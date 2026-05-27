@@ -196,16 +196,16 @@ const ITEMS = [
 function NudgeCard({ nudge, onDismiss }) {
   const [tipOpen, setTipOpen] = useState(false)
 
-  const decreaseTip = nudge.locationView === 'floor'
-    ? `Before submitting a lower count, verify the backroom bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`
-    : `Before submitting a lower count, verify the floor display (${nudge.floorLoc}) to ensure no additional stock was placed there. Undercounts on high-confidence items can trigger overordering.`
-
   const content = nudge.type === 'seldom' ? {
     headline: 'Associates achieving strong results typically fully verify stock on low- and medium-confidence counts.',
-    tip: 'Physically checking the floor display, receiving area, and backroom before confirming the estimate takes ~2 min and significantly improves system accuracy over time.',
+    tip: nudge.locationView === 'floor'
+      ? `Physically checking floor display (${nudge.floorLoc}) before confirming the estimate takes ~30 seconds and helps maximize sales and minimize waste.`
+      : `Physically checking back bin (${nudge.backLoc}) before confirming the estimate takes ~45 seconds and helps maximize sales and minimize waste.`,
   } : nudge.type === 'decrease' ? {
     headline: 'Significant count decreases on high-confidence Citrus items in this store have been associated with an estimated $240 in waste last month.',
-    tip: decreaseTip,
+    tip: nudge.locationView === 'floor'
+      ? `Before submitting a significantly lower count, verify floor display (${nudge.floorLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`
+      : `Before submitting a significantly lower count, verify back bin (${nudge.backLoc}) to ensure no unscanned stock remains. Undercounts on high-confidence items can trigger overordering.`,
   } : {
     headline: 'Significant count increases on high-confidence Citrus items in this store have been associated with an estimated $180 in lost sales last month.',
     tip: "Before adding items above the estimate, confirm the count includes only stock not yet scanned in today's incoming. Overcounting high-confidence items can delay future reorders.",
@@ -223,13 +223,13 @@ function NudgeCard({ nudge, onDismiss }) {
       <div style={{ display: 'flex', gap: 8, paddingRight: 22 }}>
         <div style={{ flexShrink: 0, marginTop: 1 }}><NudgeAlertIcon /></div>
         <div style={{ flex: 1 }}>
-          <div style={{ fontSize: 11, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Heads up</div>
-          <div style={{ fontSize: 11, color: '#78350F', lineHeight: 1.5, marginBottom: tipOpen ? 8 : 5 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: '#92400E', marginBottom: 3 }}>Heads up</div>
+          <div style={{ fontSize: 13, color: '#78350F', lineHeight: 1.5, marginBottom: tipOpen ? 8 : 5 }}>
             {content.headline}
           </div>
           {!tipOpen ? (
             <button onClick={() => setTipOpen(true)} style={{
-              fontSize: 11, fontWeight: 700, color: 'var(--amber)',
+              fontSize: 13, fontWeight: 700, color: 'var(--amber)',
               textDecoration: 'underline', textUnderlineOffset: 2,
             }}>
               Quick tip →
@@ -237,7 +237,7 @@ function NudgeCard({ nudge, onDismiss }) {
           ) : (
             <div style={{
               background: 'rgba(255,255,255,0.65)', borderRadius: 8, padding: '7px 9px',
-              fontSize: 11, color: '#92400E', lineHeight: 1.5,
+              fontSize: 13, color: '#92400E', lineHeight: 1.5,
             }}>
               {content.tip}
             </div>
@@ -658,7 +658,7 @@ export default function InventoryCount({ onBack, onDone }) {
     updateViewState(id, { saved: true })
 
     if ((item.confidence === 'medium' || item.confidence === 'low') && diff === 0) {
-      setNudge({ type: 'seldom', itemId: id })
+      setNudge({ type: 'seldom', itemId: id, floorLoc: item.floorLoc, backLoc: item.backLoc, locationView })
     } else if (item.confidence === 'high' && isSignificant) {
       setNudge({
         type: st.count < item.systemEstimate ? 'decrease' : 'increase',
