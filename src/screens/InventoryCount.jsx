@@ -561,7 +561,7 @@ function ItemCard({ item, state, locationView, onSave, onEdit, onCount, onReason
           {locationView === 'floor' && (
             <span style={{
               fontSize: 11, fontWeight: 700,
-              color: 'var(--green-primary)', background: 'var(--green-light)',
+              color: conf.color, background: conf.bg,
               borderRadius: 20, padding: '2px 8px',
             }}>Display count</span>
           )}
