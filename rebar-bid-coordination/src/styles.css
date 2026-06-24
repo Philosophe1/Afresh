@@ -13,6 +13,7 @@
   --border: #d5d7da;
   --border-2: #cdd5df;
   --mint: #9efff4;
+  --avatar-olive: #79862f;
   --white: #ffffff;
   --danger: #b42318;
   --danger-bg: #fef3f2;
@@ -23,7 +24,6 @@
   --shadow-sm: 0 1px 2px rgba(10, 12, 18, .05);
   --shadow-md: 0 1px 2px rgba(10, 12, 18, .05), 0 8px 24px rgba(10, 12, 18, .08);
   --font-sans: "Inter", "Inter Placeholder", system-ui, sans-serif;
-  --font-mono: "Fragment Mono", ui-monospace, monospace;
   --radius-control: 8px;
   --radius-card: 12px;
   --radius-lg: 20px;
@@ -40,7 +40,8 @@ body {
 }
 button { font-family: inherit; cursor: pointer; }
 .eyebrow {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
+  font-weight: 600;
   font-size: 11px;
   letter-spacing: .06em;
   text-transform: uppercase;

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rebar — New Bid Notification</title>
+<style>
+  :root {
+    --navy: #081e5a;
+    --blue: #3536e5;
+    --ok-bg: #ecfdf3; --ok-fg: #027a48;
+    --warn-bg: #fffaeb; --warn-fg: #b54708;
+    --danger-bg: #fef3f2; --danger-fg: #b42318;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    font-family: "Segoe UI", "Segoe UI Variable", Tahoma, system-ui, sans-serif;
+    overflow: hidden;
+  }
+
+  .desktop {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: linear-gradient(160deg, #142454 0%, #2a4d8f 32%, #4f86b3 62%, #bfe3df 100%);
+  }
+
+  /* ---------- desktop icons ---------- */
+  .desktop-icons {
+    position: absolute;
+    top: 18px;
+    left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .desktop-icon {
+    width: 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: default;
+  }
+  .desktop-icon:hover { background: rgba(255,255,255,0.12); }
+  .desktop-icon .glyph {
+    width: 38px; height: 38px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .desktop-icon .glyph.rebar {
+    background: var(--blue); border-radius: 8px; color: #fff;
+    font-weight: 700; font-size: 16px; font-family: "Inter", system-ui, sans-serif;
+  }
+  .desktop-icon span.label {
+    color: #fff; font-size: 12px; text-align: center; line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.65);
+  }
+
+  /* ---------- demo control bar ---------- */
+  .demo-bar {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: rgba(8, 13, 30, 0.55);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 230px;
+    backdrop-filter: blur(4px);
+  }
+  .demo-bar .demo-title {
+    color: #fff; font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: .04em; opacity: .8;
+  }
+  .demo-bar button {
+    font-family: inherit;
+    font-size: 12px;
+    text-align: left;
+    background: rgba(255,255,255,0.92);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 8px;
+    cursor: pointer;
+    color: #181d27;
+  }
+  .demo-bar button:hover { background: #fff; }
+  .demo-bar button.active { box-shadow: 0 0 0 2px var(--blue) inset; }
+
+  /* ---------- notification toast ---------- */
+  .toast-slot {
+    position: absolute;
+    right: 16px;
+    bottom: 68px;
+    width: 360px;
+  }
+  .toast {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.18), 0 16px 40px rgba(0,0,0,0.22);
+    padding: 14px 14px 12px;
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    transform: translateY(24px) scale(0.97);
+    opacity: 0;
+    transition: transform .28s ease, opacity .28s ease;
+  }
+  .toast.show { transform: translateY(0) scale(1); opacity: 1; }
+  .toast-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .toast-head .mark {
+    width: 20px; height: 20px; border-radius: 5px; background: var(--blue);
+    color: #fff; font-weight: 700; font-size: 11px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .toast-head .app-name { font-weight: 600; font-size: 12.5px; color: #181d27; }
+  .toast-head .time { margin-left: auto; font-size: 11.5px; color: #717680; }
+  .toast-head .dismiss {
+    border: none; background: transparent; color: #717680; cursor: pointer;
+    font-size: 14px; line-height: 1; padding: 2px 4px; border-radius: 4px;
+  }
+  .toast-head .dismiss:hover { background: #f2f4f7; color: #181d27; }
+
+  .toast-title { font-size: 14px; font-weight: 600; color: #181d27; margin-bottom: 2px; }
+  .toast-sub { font-size: 12px; color: #535861; margin-bottom: 9px; }
+  .toast-reason { font-size: 11.5px; color: #717680; margin-bottom: 10px; line-height: 1.35; }
+
+  .toast-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 11px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 9px; border-radius: 500px;
+    font-size: 11.5px; font-weight: 600; line-height: 1.4; white-space: nowrap;
+  }
+  .pill .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .pill.urgent { background: #b42318; color: #fff; font-weight: 700; }
+
+  .toast-actions { display: flex; gap: 8px; }
+  .toast-actions button {
+    font-family: inherit; font-weight: 600; font-size: 12.5px;
+    border-radius: 7px; padding: 7px 12px; cursor: pointer; border: 1px solid transparent;
+  }
+  .btn-view { background: var(--navy); color: #fff; flex: 1; }
+  .btn-view:hover { filter: brightness(1.12); }
+  .btn-ghost { background: transparent; color: #535861; border-color: #d5d7da; }
+  .btn-ghost:hover { background: #f2f4f7; }
+
+  /* ---------- taskbar ---------- */
+  .taskbar {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 48px;
+    background: rgba(20, 26, 46, 0.78);
+    backdrop-filter: blur(10px);
+    display: flex; align-items: center;
+    padding: 0 10px;
+  }
+  .taskbar-center {
+    position: absolute; left: 50%; top: 0; transform: translateX(-50%);
+    height: 48px; display: flex; align-items: center; gap: 4px;
+  }
+  .tb-btn {
+    width: 40px; height: 40px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; cursor: default;
+  }
+  .tb-btn:hover { background: rgba(255,255,255,0.12); }
+  .tb-search {
+    display: flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 999px;
+    height: 32px; padding: 0 14px; width: 220px;
+    color: rgba(255,255,255,0.75); font-size: 12.5px;
+  }
+  .tb-pinned { display: flex; align-items: center; gap: 2px; margin-left: 6px; }
+  .tb-square { width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0; }
+  .tray {
+    position: absolute; right: 10px; top: 0; height: 48px;
+    display: flex; align-items: center; gap: 12px; color: #fff;
+  }
+  .tray .icons { display: flex; gap: 10px; align-items: center; }
+  .tray .clock { text-align: right; font-size: 12px; line-height: 1.25; padding: 4px 10px; border-radius: 6px; }
+  .tray .clock:hover { background: rgba(255,255,255,0.12); }
+</style>
+</head>
+<body>
+  <div class="desktop">
+
+    <div class="desktop-icons">
+      <div class="desktop-icon">
+        <div class="glyph">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6">
+            <path d="M5 7h14l-1 13a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1L5 7Z"/>
+            <path d="M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
+            <path d="M3 7h18"/><path d="M10 11v6"/><path d="M14 11v6"/>
+          </svg>
+        </div>
+        <span class="label">Recycle Bin</span>
+      </div>
+      <div class="desktop-icon">
+        <div class="glyph">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6">
+            <rect x="3" y="4" width="18" height="12" rx="1.5"/>
+            <path d="M8 20h8"/><path d="M12 16v4"/>
+          </svg>
+        </div>
+        <span class="label">This PC</span>
+      </div>
+      <div class="desktop-icon">
+        <div class="glyph rebar">R</div>
+        <span class="label">Rebar</span>
+      </div>
+    </div>
+
+    <div class="demo-bar">
+      <div class="demo-title">Prototype controls — sample bids</div>
+      <button data-job="0">Memorial West (conflict, urgent)</button>
+      <button data-job="1">Lakeside Retail (clean match)</button>
+      <button data-job="2">Green Valley HS (conflict)</button>
+      <button data-job="3">Jefferson Labs (conflict)</button>
+      <button data-job="4">Federal courthouse (manual, urgent)</button>
+    </div>
+
+    <div class="toast-slot">
+      <div class="toast" id="toast"></div>
+    </div>
+
+    <div class="taskbar">
+      <div class="taskbar-center">
+        <div class="tb-btn" title="Start">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
+            <rect x="3" y="3" width="8" height="8" rx="1"/>
+            <rect x="13" y="3" width="8" height="8" rx="1"/>
+            <rect x="3" y="13" width="8" height="8" rx="1"/>
+            <rect x="13" y="13" width="8" height="8" rx="1"/>
+          </svg>
+        </div>
+        <div class="tb-search">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-3.8-3.8"/>
+          </svg>
+          Search
+        </div>
+        <div class="tb-pinned">
+          <div class="tb-btn"><div class="tb-square" style="background:#3a8ee0;"></div></div>
+          <div class="tb-btn"><div class="tb-square" style="background:#f6c453;"></div></div>
+          <div class="tb-btn"><div class="tb-square" style="background:#5fb37a;"></div></div>
+          <div class="tb-btn"><div class="tb-square" style="background:var(--blue); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:700; font-family:Inter,system-ui,sans-serif;">R</div></div>
+        </div>
+      </div>
+
+      <div class="tray">
+        <div class="icons">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5.5 12.5a11 11 0 0 1 13 0"/><path d="M9 16.5a6 6 0 0 1 6 0"/><circle cx="12" cy="20" r="1" fill="#fff" stroke="none"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M11 5 6 9H3v6h3l5 4V5Z"/><path d="M16 9a4 4 0 0 1 0 6"/></svg>
+          <svg width="20" height="14" viewBox="0 0 24 14" fill="none" stroke="#fff" stroke-width="1.6"><rect x="1" y="1" width="19" height="12" rx="2"/><rect x="21.5" y="4.5" width="1.6" height="5" fill="#fff" stroke="none"/><rect x="3" y="3" width="14" height="8" fill="#fff" stroke="none"/></svg>
+        </div>
+        <div class="clock">
+          <div id="clockTime"></div>
+          <div id="clockDate"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  var STATUS = {
+    auto:       { label: 'Bid autoassigned',      bg: '#ecfdf3', fg: '#027a48' },
+    review_rec: { label: 'Review recommendation', bg: '#fffaeb', fg: '#b54708' },
+    review:     { label: 'Review',                bg: '#fef3f2', fg: '#b42318' }
+  };
+
+  var JOBS = [
+    { name: 'Memorial West Expansion', contractor: 'Adams Mechanical', location: 'Houston, TX',
+      offsetDays: 3, status: 'review_rec',
+      reason: '3 rules disagree: equipment value, hospital building type, and spiral duct each point to a different estimator.' },
+    { name: 'Lakeside Retail Core & Shell', contractor: 'Northstar Builders', location: 'Dallas, TX',
+      offsetDays: 10, status: 'auto',
+      reason: 'GRD-only, under $25,000 — single clean rule match. Auto-assigned to Bob.' },
+    { name: 'Green Valley High School Renovation', contractor: 'Holt Construction', location: 'Fort Worth, TX',
+      offsetDays: 5, status: 'review_rec',
+      reason: '2 rules disagree: North Texas school territory vs. fans+RTUs+accessories equipment mix.' },
+    { name: 'Jefferson Labs Phase 2', contractor: 'Contractor X', location: 'Austin, TX',
+      offsetDays: 4, status: 'review_rec',
+      reason: '4 rules disagree: equipment value, lab building type, spiral duct, and contractor territory.' },
+    { name: 'Austin Federal Courthouse Annex', contractor: 'Adams Mechanical', location: 'Austin, TX',
+      offsetDays: 2, status: 'review',
+      reason: 'Federal job — always held for manual review, regardless of confidence.' }
+  ];
+
+  function today0() {
+    var d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }
+
+  function dueDateFor(job) {
+    return new Date(today0().getTime() + job.offsetDays * 86400000);
+  }
+
+  function daysUntil(dueDate) {
+    return Math.round((dueDate - today0()) / 86400000);
+  }
+
+  function fmtDue(days, dueDate) {
+    var calendar = dueDate.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    if (days <= 0) return 'Due today';
+    if (days === 1) return 'Due in 1 day (' + calendar + ')';
+    return 'Due in ' + days + ' days (' + calendar + ')';
+  }
+
+  var toastEl = document.getElementById('toast');
+  var dismissTimer = null;
+
+  function renderToast(job) {
+    clearTimeout(dismissTimer);
+    var s = STATUS[job.status];
+    var dueDate = dueDateFor(job);
+    var days = daysUntil(dueDate);
+    var urgent = days <= 3;
+
+    toastEl.classList.remove('show');
+
+    setTimeout(function () {
+      toastEl.innerHTML =
+        '<div class="toast-head">' +
+          '<div class="mark">R</div>' +
+          '<div class="app-name">Rebar</div>' +
+          '<div class="time">now</div>' +
+          '<button class="dismiss" aria-label="Dismiss">&times;</button>' +
+        '</div>' +
+        '<div class="toast-title">New bid: ' + job.name + '</div>' +
+        '<div class="toast-sub">' + job.contractor + ' &middot; ' + job.location + '</div>' +
+        '<div class="toast-reason">' + job.reason + '</div>' +
+        '<div class="toast-pills">' +
+          '<span class="pill" style="background:' + s.bg + '; color:' + s.fg + ';"><span class="dot"></span>' + s.label + '</span>' +
+          '<span class="pill" style="background:#f2f4f7; color:#717680;">' + fmtDue(days, dueDate) + '</span>' +
+          (urgent ? '<span class="pill urgent">Urgent</span>' : '') +
+        '</div>' +
+        '<div class="toast-actions">' +
+          '<button class="btn-view">View in Rebar</button>' +
+          '<button class="btn-ghost dismiss">Dismiss</button>' +
+        '</div>';
+
+      requestAnimationFrame(function () {
+        toastEl.classList.add('show');
+      });
+
+      toastEl.querySelectorAll('.dismiss').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          toastEl.classList.remove('show');
+        });
+      });
+
+      var viewBtn = toastEl.querySelector('.btn-view');
+      viewBtn.addEventListener('click', function () {
+        viewBtn.textContent = 'Opening…';
+        viewBtn.disabled = true;
+        dismissTimer = setTimeout(function () {
+          toastEl.classList.remove('show');
+        }, 700);
+      });
+    }, toastEl.classList.contains('show') ? 0 : 0);
+  }
+
+  document.querySelectorAll('.demo-bar button').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.demo-bar button').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      renderToast(JOBS[Number(btn.getAttribute('data-job'))]);
+    });
+  });
+
+  function updateClock() {
+    var now = new Date();
+    document.getElementById('clockTime').textContent =
+      now.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    document.getElementById('clockDate').textContent =
+      now.toLocaleDateString([], { month: 'numeric', day: 'numeric', year: 'numeric' });
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      document.querySelector('.demo-bar button[data-job="0"]').classList.add('active');
+      renderToast(JOBS[0]);
+    }, 900);
+  });
+</script>
+</body>
+</html>

@@ -14,7 +14,7 @@ export default function JobRow({ job, evaluation, selected, onClick }) {
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
         <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--ink)' }}>{job.name}</div>
-        <div style={{ fontSize: 12, fontFamily: 'var(--font-mono)', color: 'var(--muted)' }}>#{job.id}</div>
+        <div style={{ fontSize: 12, color: 'var(--muted)' }}>#{job.id}</div>
       </div>
       <div style={{ fontSize: 12.5, color: 'var(--body)', marginTop: 2 }}>
         {job.contractor} · {job.location}

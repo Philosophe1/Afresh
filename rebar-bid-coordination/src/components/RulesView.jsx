@@ -16,7 +16,7 @@ export default function RulesView() {
           {ruleDefinitions.map((r, i) => (
             <div key={r.id} className="card" style={{ padding: 14, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center' }}>
               <div>
-                <div style={{ fontSize: 13, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>Rule {i + 1}</div>
+                <div style={{ fontSize: 13, color: 'var(--muted)' }}>Rule {i + 1}</div>
                 <div style={{ fontSize: 14, marginTop: 2 }}>{r.label}</div>
               </div>
               <span className="pill tone-info" style={{ flexShrink: 0 }}>{r.target}</span>
